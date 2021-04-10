@@ -1,6 +1,8 @@
 import React,{Component,Fragment} from 'react'
 import './App.scss';
-import { Button } from 'antd';
+import { BrowserRouter,Switch,Route } from 'react-router-dom'
+
+import Login from './view/login/Index'
 
 class Home extends Component {
   constructor() {
@@ -8,11 +10,11 @@ class Home extends Component {
   }
   render() {
     return (
-      <Fragment>
-        <h1>6666</h1>
-        <Button type="primary">Primary Button</Button>
-        <Button>Default Button</Button>
-      </Fragment>
+      <BrowserRouter>
+        <Switch>
+          <Route exact component={Login} path="/" />
+        </Switch>
+      </BrowserRouter>
     )
   }
 }
