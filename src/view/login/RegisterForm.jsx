@@ -46,6 +46,16 @@ export default class RegisterForm extends Component {
                             <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Password" />
                         </Form.Item>
                         <Form.Item
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Password!',
+                                },
+                            ]}>
+                            <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Password" />
+                        </Form.Item>
+                        <Form.Item
                             name="code"
                             rules={[
                                 {
