@@ -1,24 +1,42 @@
 import React, { Component,Fragment } from 'react'
-import { Form, Input, Button, Row, Col } from 'antd';
+import { Form, Input, Button, Row, Col, message } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
 // 验证
-import { validate_password } from './../../utils/validate'
+import { validate_password,validate_email } from './../../utils/validate'
 
-import { Login } from './../../api/account'
+import { Login,GetCode } from './../../api/account'
 
+// 组件
+import Code from './../../components/code/index'
 export default class LoginForm extends Component {
-
+    constructor() {
+        super();
+        this.state = {
+            username:"",
+            code_button_loading:false,
+            code_button_disabled:false,
+            code_button_text: "获取验证码"
+        }
+    }
     onFinish = (values) => {
         console.log(values,'values')
         Login().then(res => {
             console.log(res)
         })
 	};
+    // 获取input中value
+    inputChange = (e) => {
+        let value = e.target.value
+        this.setState({
+            username:value
+        })
+    }
     toggleForm = () => {
         this.props.switchForm('register')
     }
     render() {
+        const { username } = this.state
         return (
             <Fragment>
                 <div className="form-header">
@@ -39,7 +57,7 @@ export default class LoginForm extends Component {
                                 { required: true, message: '邮箱不能为空'},
                                 { type: 'email', message: '邮箱格式不正确'},
                             ]}>
-                            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email" />
+                            <Input value={username} onChange={this.inputChange} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email" />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -62,7 +80,8 @@ export default class LoginForm extends Component {
                                     <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Code" />
                                 </Col>
                                 <Col span={8}>
-                                    <Button type="danger" className="login-form-button" block>获取验证码</Button>
+                                    {/* <Button type="danger" disabled={code_button_disabled} loading={code_button_loading} className="login-form-button" onClick={this.getCode} block>{code_button_text}</Button> */}
+                                    <Code username={username}/>
                                 </Col>
                             </Row>
                         </Form.Item>

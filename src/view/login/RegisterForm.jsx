@@ -2,14 +2,31 @@ import React, { Component,Fragment } from 'react'
 import { Form, Input, Button, Row, Col } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
+// 组件
+import Code from './../../components/code/index'
+
 export default class RegisterForm extends Component {
+    constructor() {
+        super();
+        this.state = {
+            username:""
+        }
+    }
     onFinish = (values) => {
 		console.log('Received values of form: ', values);
 	};
+    // 获取input中value
+    inputChange = (e) => {
+        let value = e.target.value
+        this.setState({
+            username:value
+        })
+    };
     toggleForm = () => {
         this.props.switchForm('login')
     }
     render() {
+        let { username } = this.state
         return (
             <Fragment>
                 <div className="form-header">
@@ -26,14 +43,11 @@ export default class RegisterForm extends Component {
                         onFinish={() => this.onFinish}
                     >
                         <Form.Item
-                            name="username"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input your Username!',
-                                },
+                            name="username" rules={[
+                                { required: true, message: '邮箱不能为空'},
+                                { type: 'email', message: '邮箱格式不正确'},
                             ]}>
-                            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                            <Input value={username} onChange={this.inputChange} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email" />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -68,7 +82,7 @@ export default class RegisterForm extends Component {
                                     <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Code" />
                                 </Col>
                                 <Col span={8}>
-                                    <Button type="danger" className="login-form-button" block>获取验证码</Button>
+                                    <Code username={username}/>
                                 </Col>
                             </Row>
                         </Form.Item>

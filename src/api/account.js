@@ -11,3 +11,16 @@ export function Login(data){
         data,
     })
 }
+
+/**
+ * 验证码接口
+ * @param {username} data 
+ */
+ export function GetCode(data){
+    return service.request({
+        url: "/getSms/",
+        method: "post",
+        data,
+    })
+}
+
