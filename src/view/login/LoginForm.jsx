@@ -1,42 +1,78 @@
 import React, { Component,Fragment } from 'react'
+import { withRouter } from 'react-router-dom'
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
 // 验证
 import { validate_password,validate_email } from './../../utils/validate'
 
-import { Login,GetCode } from './../../api/account'
+import { Login } from './../../api/account'
 
 // 组件
 import Code from './../../components/code/index'
-export default class LoginForm extends Component {
+// 加密
+var CryptoJS = require("crypto-js");
+
+class LoginForm extends Component {
     constructor() {
         super();
         this.state = {
             username:"",
+            password:"",
+            code:"",
             code_button_loading:false,
             code_button_disabled:false,
-            code_button_text: "获取验证码"
+            code_button_text: "获取验证码",
+            module:'login',
+            loading:false,
         }
     }
     onFinish = (values) => {
-        console.log(values,'values')
-        Login().then(res => {
+        const requestData = {
+            username: this.state.username,
+            password:CryptoJS.MD5(this.state.password).toString(),
+            code:this.state.code
+        }
+        this.setState({
+            loading:true
+        })
+        Login(requestData).then(res => {
             console.log(res)
+            this.setState({
+                loading:false
+            })
+            this.props.history.push('/index')
+        }).catch(error => {
+            this.setState({
+                loading:false
+            })
         })
 	};
     // 获取input中value
-    inputChange = (e) => {
+    inputChangeUserName = (e) => {
         let value = e.target.value
         this.setState({
             username:value
         })
     }
+    inputChangePassword= (e) => {
+        let value = e.target.value
+        this.setState({
+            password:value
+        })
+    }
+    inputChangeCode= (e) => {
+        let value = e.target.value
+        this.setState({
+            code:value
+        })
+    }
+
     toggleForm = () => {
         this.props.switchForm('register')
     }
     render() {
-        const { username } = this.state
+        const { username , module, loading} = this.state
         return (
             <Fragment>
                 <div className="form-header">
@@ -57,7 +93,7 @@ export default class LoginForm extends Component {
                                 { required: true, message: '邮箱不能为空'},
                                 { type: 'email', message: '邮箱格式不正确'},
                             ]}>
-                            <Input value={username} onChange={this.inputChange} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email" />
+                            <Input value={username} onChange={this.inputChangeUserName} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email" />
                         </Form.Item>
                         <Form.Item
                             name="password"
@@ -67,7 +103,7 @@ export default class LoginForm extends Component {
                                 // {max:20,message:"密码长度不能大于20位"}
                                 {pattern:validate_password,message:"请输入大于6位小于20位数字+字母"}
                             ]}>
-                            <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Password" />
+                            <Input onChange={this.inputChangePassword} prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Password" />
                         </Form.Item>
                         <Form.Item
                             name="code"
@@ -77,17 +113,17 @@ export default class LoginForm extends Component {
                             ]}>
                             <Row gutter={13}>
                                 <Col span={15}>
-                                    <Input prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Code" />
+                                    <Input onChange={this.inputChangeCode} prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Code" />
                                 </Col>
                                 <Col span={8}>
                                     {/* <Button type="danger" disabled={code_button_disabled} loading={code_button_loading} className="login-form-button" onClick={this.getCode} block>{code_button_text}</Button> */}
-                                    <Code username={username}/>
+                                    <Code module={module} username={username}/>
                                 </Col>
                             </Row>
                         </Form.Item>
 
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" className="login-form-button" block>登录</Button>
+                        <Form.Item>[]
+                            <Button type="primary" loading={loading} htmlType="submit" className="login-form-button" block>登录</Button>
                         </Form.Item>
                     </Form>
                 </div>
@@ -95,3 +131,4 @@ export default class LoginForm extends Component {
         )
     }
 }
+export default withRouter(LoginForm)

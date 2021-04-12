@@ -15,7 +15,8 @@ class Code extends Component {
             username: "",
             code_button_loading:false,
             code_button_disabled:false,
-            code_button_text: "获取验证码"
+            code_button_text: "获取验证码",
+            module:props.module
         }
     }
     // 监听父组件传递的值
@@ -48,10 +49,11 @@ class Code extends Component {
         })
         const requestData = {
             username,
-            module:'login'
+            module:this.state.module
         }
         GetCode(requestData).then(response => {
             console.log(response)
+            message.success(response.data.message)
             this.setState({
                 code_button_loading:false
             })

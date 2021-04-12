@@ -3,7 +3,7 @@ import './App.scss';
 import { BrowserRouter,Switch,Route } from 'react-router-dom'
 
 import Login from './view/login/Index'
-
+import Index from './view/index/Index'
 class Home extends Component {
   constructor() {
     super()
@@ -13,6 +13,7 @@ class Home extends Component {
       <BrowserRouter>
         <Switch>
           <Route exact component={Login} path="/" />
+          <Route exact component={Index} path="/index" />
         </Switch>
       </BrowserRouter>
     )
