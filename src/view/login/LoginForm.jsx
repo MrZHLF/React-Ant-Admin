@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
+import { setToken } from './../../utils/session'
 // 验证
 import { validate_password,validate_email } from './../../utils/validate'
 
@@ -12,6 +13,7 @@ import { Login } from './../../api/account'
 import Code from './../../components/code/index'
 // 加密
 var CryptoJS = require("crypto-js");
+
 
 class LoginForm extends Component {
     constructor() {
@@ -41,6 +43,8 @@ class LoginForm extends Component {
             this.setState({
                 loading:false
             })
+            const data = res.data.data
+            setToken(data.token) //token存储
             this.props.history.push('/index')
         }).catch(error => {
             this.setState({
@@ -116,13 +120,12 @@ class LoginForm extends Component {
                                     <Input onChange={this.inputChangeCode} prefix={<UnlockOutlined className="site-form-item-icon" />} placeholder="Code" />
                                 </Col>
                                 <Col span={8}>
-                                    {/* <Button type="danger" disabled={code_button_disabled} loading={code_button_loading} className="login-form-button" onClick={this.getCode} block>{code_button_text}</Button> */}
                                     <Code module={module} username={username}/>
                                 </Col>
                             </Row>
                         </Form.Item>
 
-                        <Form.Item>[]
+                        <Form.Item>
                             <Button type="primary" loading={loading} htmlType="submit" className="login-form-button" block>登录</Button>
                         </Form.Item>
                     </Form>
