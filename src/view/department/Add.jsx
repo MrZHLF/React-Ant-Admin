@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 
-class User extends Component {
+export default class DepartmentAdd extends Component {
     render() {
         return (
             <div>
-                用户管理
+                添加
             </div>
         )
     }
 }
-export default User

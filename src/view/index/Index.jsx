@@ -34,7 +34,9 @@ class Index extends Component {
     render() {
         return (
             <Layout className="layout-wrap">
-                    <Header className="layout-header"><LayoutHeader toggle={this.toggleCollapsed} collapsed={this.state.collapsed}/></Header>
+                    <Header className="layout-header">
+                        <LayoutHeader toggle={this.toggleCollapsed} collapsed={this.state.collapsed}/>
+                    </Header>
                 <Layout>
                     <Sider width="250px" collapsed={this.state.collapsed}>
                         <LayoutAside/>
