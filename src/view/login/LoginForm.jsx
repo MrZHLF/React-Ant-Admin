@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
-import { setToken } from './../../utils/session'
+import { setToken,setUsername } from './../../utils/cookies'
 // 验证
 import { validate_password,validate_email } from './../../utils/validate'
 
@@ -44,7 +44,9 @@ class LoginForm extends Component {
                 loading:false
             })
             const data = res.data.data
+            console.log(data,'3333')
             setToken(data.token) //token存储
+            setUsername(data.username)
             this.props.history.push('/index')
         }).catch(error => {
             this.setState({

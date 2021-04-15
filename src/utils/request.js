@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { getToken,getUsername } from './cookies'
 const service = axios.create({
     baseURL:process.env.REACT_APP_API,
     timeout:5000,
@@ -7,6 +7,8 @@ const service = axios.create({
 
 // 请求拦截
 service.interceptors.request.use(function(config) {
+    config.headers["Token"] = getToken();
+    config.headers["Username"] = getUsername();
     return config
 },function(error) {
     return Promise.reject(error)
