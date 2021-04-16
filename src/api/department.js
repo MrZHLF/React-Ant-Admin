@@ -35,3 +35,38 @@ export function DepartmentAddApi(data){
         data,
     })
 }
+
+/**
+ * 禁启用
+ * @param {data} data 
+ */
+ export function Status(data){
+    return service.request({
+        url: "/department/status/",
+        method: "post",
+        data,
+    })
+}
+
+/**
+ * 获取详情
+ * @param {id} data 
+ */
+ export function Detailed(data){
+    return service.request({
+        url: "/department/detailed/",
+        method: "post",
+        data,
+    })
+}
+/**
+ * 编辑详情
+ * @param {id，data} data 
+ */
+ export function Edit(data){
+    return service.request({
+        url: "/department/edit/",
+        method: "post",
+        data,
+    })
+}

@@ -1,17 +1,36 @@
 import React, { Component } from 'react'
 import { Form,Input,Button, InputNumber,Radio,message  } from 'antd'
 
-import { DepartmentAddApi } from '../../api/department'
+import { DepartmentAddApi,Detailed,Edit } from '../../api/department'
 export default class DepartmentAdd extends Component {
     constructor(props) {
         super(props);
         this.state={
             loading:false,
+            id:"",
             formLayout:{
                 labelCol:{span:2  },
                 wrapperCol:{span:22 },
             }
         }
+    }
+    componentWillMount(){
+        if (this.props.location.state) {
+            this.setState({
+                id:this.props.location.state.id
+            })
+        }
+    }
+    componentDidMount() {
+        this.getDerailed()
+    }
+    getDerailed() {
+        // 获取表单详情
+        if(!this.props.location.state) {return false}
+        Detailed({id:this.state.id}).then(response => {
+            console.log(response)
+            this.refs.form.setFieldsValue(response.data.data)
+        })
     }
     onSubmit = (value) => {
         if (!value.name) {
@@ -30,7 +49,15 @@ export default class DepartmentAdd extends Component {
         this.setState({
             loading:true
         })
+
+        this.state.id ? this.onHandleEdit(value) : this.onHandleAdd(value)
+        
+    }
+
+    // 添加信息
+    onHandleAdd = (value) => {
         DepartmentAddApi(value).then(response => {
+            
             console.log(response,'response')
             let data = response.data
             message.info(data.message)
@@ -38,7 +65,23 @@ export default class DepartmentAdd extends Component {
                 loading:false
             })
             // 重置表单
-            this.$refs.form.resetFields()
+            this.refs.form.resetFields()
+        }).catch(error=>{
+            this.setState({
+                loading:false
+            })
+        })
+    }
+    // 编辑信息
+    onHandleEdit = (value) => {
+        const requestData = value
+        requestData.id = this.state.id
+        Edit(requestData).then(response => {
+            let data = response.data
+            message.info(data.message)
+            this.setState({
+                loading:false
+            })
         }).catch(error=>{
             this.setState({
                 loading:false
