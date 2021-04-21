@@ -1,7 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component,Fragment } from 'react'
 import { Form,Input,Button, InputNumber,Radio,message  } from 'antd'
 
 import { DepartmentAddApi,Detailed,Edit } from '../../api/department'
+
+import FormCom from '@c/form/Index'
 export default class DepartmentAdd extends Component {
     constructor(props) {
         super(props);
@@ -11,7 +13,10 @@ export default class DepartmentAdd extends Component {
             formLayout:{
                 labelCol:{span:2  },
                 wrapperCol:{span:22 },
-            }
+            },
+            formItem:[
+                {type:"Input", label:"部门名称",name:"name",required:true}
+            ]
         }
     }
     componentWillMount(){
@@ -90,31 +95,34 @@ export default class DepartmentAdd extends Component {
     }
     render() {
         return (
-            <Form 
-                ref="form"
-                {...this.state.formLayout}
-                onFinish={this.onSubmit}
-                initialValues={{status:true,number: 0}}
-            >
-                <Form.Item label="部门名称" name="name">
-                    <Input/>
-                </Form.Item>
-                <Form.Item label="人员数量" name="number">
-                    <InputNumber min={0} max={100} />
-                </Form.Item>
-                <Form.Item label="禁启用" name="status">
-                    <Radio.Group>
-                        <Radio value={false}>禁用</Radio>
-                        <Radio value={true}>启用</Radio>
-                    </Radio.Group>
-                </Form.Item>
-                <Form.Item label="描述" name="content">
-                    <Input.TextArea />
-                </Form.Item>
-                <Form.Item>
-                    <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button>
-                </Form.Item>
-            </Form>
+            <Fragment>
+                <FormCom formItem={this.state.formItem}></FormCom>
+                <Form 
+                    ref="form"
+                    {...this.state.formLayout}
+                    onFinish={this.onSubmit}
+                    initialValues={{status:true,number: 0}}
+                >
+                    <Form.Item label="部门名称" name="name">
+                        <Input/>
+                    </Form.Item>
+                    <Form.Item label="人员数量" name="number">
+                        <InputNumber min={0} max={100} />
+                    </Form.Item>
+                    <Form.Item label="禁启用" name="status">
+                        <Radio.Group>
+                            <Radio value={false}>禁用</Radio>
+                            <Radio value={true}>启用</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                    <Form.Item label="描述" name="content">
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button>
+                    </Form.Item>
+                </Form>
+            </Fragment>
         )
     }
 }
