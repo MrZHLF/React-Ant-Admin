@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import  { Form, Input, Button,Table,Switch, message,Modal } from 'antd'
-import { GetList,Delete,Status } from '@api/department'
+import  { Button,Switch, message } from 'antd'
+import { Status } from '@api/department'
 
 import TableComponent from '@c/tableData/Index'
 
@@ -24,7 +24,7 @@ class DepartmentList extends Component {
                 deleteUrl:"departmentListDelete",
                 method:"post",
                 checkbox:true,
-                rowKey:"id",
+                rowkey:"id",
                 thead:[
                     {title:"部门名称",dataIndex:"name",key:"name"},
                     {
@@ -62,16 +62,6 @@ class DepartmentList extends Component {
         this.tableComponent = ref;
     }
 
-    // 搜索
-    onFinish = (value) => {
-        if(this.state.loadingTable) {return false}
-        console.log(value)
-        this.setState({
-            keyWork:value.name,
-            pageNumber:1,
-            pageSize:10
-        })
-    }
     onHandlerSwitch(data) {
         // 禁启用
         if (!data.status) {return false}
@@ -93,19 +83,8 @@ class DepartmentList extends Component {
     render() {
         return (
             <Fragment>
-                <Form 
-                    onFinish={this.onFinish}
-                    layout="inline">
-                    <Form.Item label="部门名称" name="name">
-                        <Input placeholder="请输入部门名称" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">搜索</Button>
-                    </Form.Item>
-                </Form>
-                <div className="table-wrap">
                     <TableComponent onRef={this.getChildRef} batchButton={true} config={this.state.tableConfig} />
-                </div>
+                
             </Fragment>
         )
     }

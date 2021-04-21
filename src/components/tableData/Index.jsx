@@ -1,10 +1,11 @@
 import React, { Component,Fragment } from 'react'
 
-import PropTypes from 'prop-types'
 
-import  { Table, Pagination,Row,Col,Button,message,Modal  } from 'antd'
+import  {Form, Input, Button,message,Modal  } from 'antd'
 import { TableList,TableDelete } from '@api/common'
 import requestUrl from "@api/requestUrl"
+
+import TableBasis from './Table'
 
 class TableComponent extends Component {
     constructor(props) {
@@ -29,16 +30,19 @@ class TableComponent extends Component {
         this.props.onRef(this)
     }
     loadData =() =>{
-        const {pageNumber, pageSize}=this.state
+        const {pageNumber, pageSize,keyWork}=this.state
         const requestData = {
             url:requestUrl[this.props.config.url],
             method:this.props.config.method,
             data:{
                 pageNumber,
-                pageSize,
+                pageSize
             }
         }
-
+        // 搜索参数
+        if (keyWork) {
+            requestData.data.name = keyWork
+        }
         this.setState({loadingTable:true})
         TableList(requestData).then(response => {
             const responseData = response.data.data
@@ -99,6 +103,16 @@ class TableComponent extends Component {
         }
     }
 
+    // 搜索
+    onFinish = (value) => {
+        this.setState({
+            keyWork:value.name,
+            pageNumber:1,
+            pageSize:10
+        })
+        this.loadData()
+    }
+
     // 弹窗
     modalThen = () => {
         if(this.state.checkboxValue.length ==0) {
@@ -128,32 +142,36 @@ class TableComponent extends Component {
     }
 
     render() {
-        const { thead, checkbox,rowKey } = this.props.config
-        const { loadingTable,total } = this.state
+        const { thead, checkbox,rowkey } = this.props.config
         const rowSelection = {
             onChange: this.onCheckebox
         }
         return (
             <Fragment>
-                
-                <Table pagination={false} loading={loadingTable} bordered rowKey={rowKey || "id"} rowSelection={checkbox ? rowSelection : null} columns={thead} dataSource={this.state.data} />
-                <div className="spacing-30"></div>
-                <Row>
-                    <Col span={8}>
-                        {this.props.batchButton && <Button onClick={() => this.onHandlerDelete()}>批量删除</Button>} 
-                    </Col>
-                    <Col span={16}>
-                        <Pagination
-                            onChange={this.onChangeCurrenPage}
-                            onShowSizeChange={this.onChangeSizePage}
-                            className="pull-right"
-                            total={total}
-                            showSizeChanger
-                            showQuickJumper
-                            showTotal={total => `Total ${total} items`}
-                        />
-                    </Col>
-                </Row>
+                <Form 
+                    onFinish={this.onFinish}
+                    layout="inline">
+                    <Form.Item label="部门名称" name="name">
+                        <Input placeholder="请输入部门名称" />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">搜索</Button>
+                    </Form.Item>
+                </Form>
+                <div className="table-wrap">
+                    <TableBasis 
+                        columns={thead} 
+                        dataSource={this.state.data}
+                        total={this.state.total}
+                        changePageCurrent={this.onChangeCurrenPage}
+                        changePageSize={this.onChangeSizePage}
+                        handlerDelete={() => this.onHandlerDelete()}
+                        rowSelection={checkbox ? rowSelection : null}
+                        rowkey={rowkey}
+                    >
+                    </TableBasis>
+                </div>
+            
                 {/* 弹窗 */}
                 <Modal
                     title="提示"
@@ -169,14 +187,6 @@ class TableComponent extends Component {
             </Fragment>
         )
     }
-}
-// 类型检测
-TableComponent.propTypes = {
-    config: PropTypes.object
-}
-// 默认值
-TableComponent.defaultProps = {
-    batchButton: false
 }
 
 export default TableComponent
