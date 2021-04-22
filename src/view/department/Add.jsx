@@ -10,12 +10,45 @@ export default class DepartmentAdd extends Component {
         this.state={
             loading:false,
             id:"",
+            formConfig:{
+                url:"departmentAdd"
+            },
             formLayout:{
                 labelCol:{span:2  },
                 wrapperCol:{span:22 },
             },
             formItem:[
-                {type:"Input", label:"部门名称",name:"name",required:true}
+                {
+                    type:"Input", 
+                    label:"部门名称",
+                    name:"name",required:true,
+                    style:{
+                        width:"200px"
+                    },
+                    placeholder:"请输入部门名称"
+                },
+                {
+                    type:"InputNumber", 
+                    label:"人员数量",
+                    name:"number",
+                    required:true,
+                    min:0,
+                    max:100,
+                    style:{
+                        width:"200px"
+                    },
+                    placeholder:"请输入人员数量"
+                },
+                {
+                    type:"Radio", 
+                    label:"禁启用",
+                    name:"statue",
+                    required:true,
+                    options:[
+                        {label:"禁用",value:false},
+                        {label:"启用",value:true}
+                    ],
+                }
             ]
         }
     }
@@ -96,7 +129,7 @@ export default class DepartmentAdd extends Component {
     render() {
         return (
             <Fragment>
-                <FormCom formItem={this.state.formItem}></FormCom>
+                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem}></FormCom>
                 <Form 
                     ref="form"
                     {...this.state.formLayout}

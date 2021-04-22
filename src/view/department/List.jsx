@@ -83,8 +83,7 @@ class DepartmentList extends Component {
     render() {
         return (
             <Fragment>
-                    <TableComponent onRef={this.getChildRef} batchButton={true} config={this.state.tableConfig} />
-                
+                <TableComponent onRef={this.getChildRef} batchButton={true} config={this.state.tableConfig} />
             </Fragment>
         )
     }
