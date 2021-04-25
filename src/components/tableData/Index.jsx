@@ -6,13 +6,14 @@ import { TableList,TableDelete } from '@api/common'
 import requestUrl from "@api/requestUrl"
 
 import TableBasis from './Table'
+import FormSearch from '../formSearch/Index'
 
 class TableComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
             data:[],
-            keyWork:"",
+            searchData:{},
             pageNumber:1,
             pageSize:10,
             loadingTable:false,
@@ -30,7 +31,7 @@ class TableComponent extends Component {
         this.props.onRef(this)
     }
     loadData =() =>{
-        const {pageNumber, pageSize,keyWork}=this.state
+        const {pageNumber, pageSize,searchData}=this.state
         const requestData = {
             url:requestUrl[this.props.config.url],
             method:this.props.config.method,
@@ -39,10 +40,14 @@ class TableComponent extends Component {
                 pageSize
             }
         }
+        console.log(searchData,'searchData')
         // 搜索参数
-        if (keyWork) {
-            requestData.data.name = keyWork
+        if(Object.keys(searchData).length != 0)  {
+            for (let key in searchData) {
+                requestData.data[key] = searchData[key]
+            }
         }
+        console.log(requestData.data,'requestData.data')
         this.setState({loadingTable:true})
         TableList(requestData).then(response => {
             const responseData = response.data.data
@@ -103,14 +108,15 @@ class TableComponent extends Component {
         }
     }
 
-    // 搜索
-    onFinish = (value) => {
+
+    search = (searchData) => {
         this.setState({
-            keyWork:value.name,
             pageNumber:1,
-            pageSize:10
+            pageSize:10,
+            searchData
+        },() => {
+            this.loadData()
         })
-        this.loadData()
     }
 
     // 弹窗
@@ -142,22 +148,13 @@ class TableComponent extends Component {
     }
 
     render() {
-        const { thead, checkbox,rowkey } = this.props.config
+        const { thead, checkbox,rowkey,formItem } = this.props.config
         const rowSelection = {
             onChange: this.onCheckebox
         }
         return (
             <Fragment>
-                <Form 
-                    onFinish={this.onFinish}
-                    layout="inline">
-                    <Form.Item label="部门名称" name="name">
-                        <Input placeholder="请输入部门名称" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">搜索</Button>
-                    </Form.Item>
-                </Form>
+                <FormSearch formItem={formItem} search={this.search} />
                 <div className="table-wrap">
                     <TableBasis 
                         columns={thead} 

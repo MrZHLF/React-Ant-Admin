@@ -1,5 +1,5 @@
 import React, { Component,Fragment } from 'react'
-import { Form,Input,Button, InputNumber,Radio,message  } from 'antd'
+import { message  } from 'antd'
 
 import { DepartmentAddApi,Detailed,Edit } from '../../api/department'
 
@@ -11,7 +11,12 @@ export default class DepartmentAdd extends Component {
             loading:false,
             id:"",
             formConfig:{
-                url:"departmentAdd"
+                url:"departmentAdd",
+                initValue:{
+                    number:0,
+                    status:true
+                },
+                setFieldValue:{}
             },
             formLayout:{
                 labelCol:{span:2  },
@@ -42,12 +47,19 @@ export default class DepartmentAdd extends Component {
                 {
                     type:"Radio", 
                     label:"禁启用",
-                    name:"statue",
+                    name:"status",
                     required:true,
                     options:[
                         {label:"禁用",value:false},
                         {label:"启用",value:true}
                     ],
+                },
+                {
+                    type:"Input", 
+                    label:"描述",
+                    name:"content",
+                    required:true,
+                    placeholder:"请输入描述内容"
                 }
             ]
         }
@@ -67,23 +79,29 @@ export default class DepartmentAdd extends Component {
         if(!this.props.location.state) {return false}
         Detailed({id:this.state.id}).then(response => {
             console.log(response)
-            this.refs.form.setFieldsValue(response.data.data)
+            this.setState({
+                formConfig:{
+                    ...this.state.formConfig,
+                    setFieldValue:response.data.data
+                }
+            })
+            // this.refs.form.setFieldsValue(response.data.data)
         })
     }
     onSubmit = (value) => {
-        if (!value.name) {
-            message.error('部门名称不能为空')
-            return false
-        }
+        // if (!value.name) {
+        //     message.error('部门名称不能为空')
+        //     return false
+        // }
         
-        if (!value.number || value.number == 0) {
-            message.error('人员数量不能为空')
-            return false
-        }
-        if (!value.content) {
-            message.error('描述不能为空')
-            return false
-        }
+        // if (!value.number || value.number == 0) {
+        //     message.error('人员数量不能为空')
+        //     return false
+        // }
+        // if (!value.content) {
+        //     message.error('描述不能为空')
+        //     return false
+        // }
         this.setState({
             loading:true
         })
@@ -95,7 +113,6 @@ export default class DepartmentAdd extends Component {
     // 添加信息
     onHandleAdd = (value) => {
         DepartmentAddApi(value).then(response => {
-            
             console.log(response,'response')
             let data = response.data
             message.info(data.message)
@@ -129,8 +146,8 @@ export default class DepartmentAdd extends Component {
     render() {
         return (
             <Fragment>
-                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem}></FormCom>
-                <Form 
+                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit}></FormCom>
+                {/* <Form 
                     ref="form"
                     {...this.state.formLayout}
                     onFinish={this.onSubmit}
@@ -154,7 +171,7 @@ export default class DepartmentAdd extends Component {
                     <Form.Item>
                         <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button>
                     </Form.Item>
-                </Form>
+                </Form> */}
             </Fragment>
         )
     }
