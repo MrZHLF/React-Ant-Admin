@@ -5,12 +5,12 @@ import  { Table ,Row,Col,Button,Pagination } from 'antd'
 
 class TableBasis extends Component {
     render() {
-        const { thead } = this.props.config
+        const { columns,dataSource,total,changePageCurrent,changePageSize,batchButton,handlerDelete,rowSelection,rowkey } = this.props
         return (
             <Fragment>
+                <Table pagination={false} rowKey={rowkey} bordered columns={columns} dataSource={dataSource} rowSelection={rowSelection} />
                 <div className="spacing-30"></div>
-                <Table bordered columns={thead} />
-                {/* <Row>
+                <Row>
                     <Col span={8}>
                         {batchButton && <Button onClick={handlerDelete}>批量删除</Button>} 
                     </Col>
@@ -25,7 +25,7 @@ class TableBasis extends Component {
                             showTotal={total => `Total ${total} items`}
                         />
                     </Col>
-                </Row> */}
+                </Row>
             </Fragment>
         )
     }
@@ -33,11 +33,22 @@ class TableBasis extends Component {
 
 // 类型检测
 TableBasis.propTypes = {
-    config:PropTypes.object
+    config: PropTypes.array,
+    dataSource: PropTypes.array,
+    total:PropTypes.number,
+    changePageCurrent:PropTypes.func,
+    changePageSize:PropTypes.func,
+    batchButton:PropTypes.bool,
+    rowSelection:PropTypes.object,
+    rowkey:PropTypes.string
 }
 // 默认值
 TableBasis.defaultProps = {
-    config:{}
+    columns: [],
+    dataSource:[],
+    total:0,
+    batchButton:true,
+    rowkey:'id'
 }
 
 export default TableBasis

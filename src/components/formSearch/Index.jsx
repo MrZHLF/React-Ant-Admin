@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
-import {requestData} from '@api/common'
 import requestUrl from "@api/requestUrl"
-import Global from './../../js/global'
-
+import { TableList } from '@api/common'
+import { connect } from 'react-redux'
 import { Form,Input,Button, Select,InputNumber,Radio,message } from 'antd'
 const { Option } = Select;
 
@@ -22,6 +20,9 @@ class FormSearch extends Component {
         }
     }
 
+    componentDidMount() {
+        this.onSubmit()
+    }
     componentWillReceiveProps({formConfig}) {
         this.refs.form.setFieldsValue(formConfig.setFieldValue)
     }
@@ -105,7 +106,7 @@ class FormSearch extends Component {
             }
 
             if (item.type === 'Select') {
-                item.options = Global[item.optionsKey]
+                item.options = this.props.config[item.optionsKey]
                 formList.push(this.selectElem(item)) 
             }
 
@@ -127,7 +128,10 @@ class FormSearch extends Component {
                 searchData[key] = value[key]
             }
         }
-        this.props.search(searchData)
+        this.props.search({
+            url:"departmentList",
+            searchData
+        })
     }
     render() {
         return (
@@ -155,4 +159,46 @@ FormSearch.propTypes = {
 FormSearch.defaultProps = {
     formConfig: {},
 }
-export default FormSearch
+
+// 获取store值
+const mapStateToProps = (state) => ({
+    config: state.config
+})
+
+// 执行action
+const mapDispatchToProps = (dispatch) => {
+    return {
+        search: (params) => {
+            const requestData = {
+                url:requestUrl[params.url],
+                data:{
+                    pageNumber:1,
+                    pageSize:10
+                }
+            }
+            // 搜索参数
+            if(Object.keys(params.searchData).length != 0)  {
+                for (let key in params.searchData) {
+                    requestData.data[key] = params.searchData[key]
+                }
+            }
+            TableList(requestData).then(response => {
+                const responseData = response.data.data
+                console.log(responseData)
+                dispatch({
+                    type:"GET_DEPARTMENT_LIST",
+                    payload:{
+                        data:responseData.data
+                    }
+                })
+            }).catch(error=> {
+
+            })
+        }
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(FormSearch) 
