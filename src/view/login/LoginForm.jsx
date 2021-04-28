@@ -1,9 +1,14 @@
 import React, { Component,Fragment } from 'react'
 import { withRouter } from 'react-router-dom'
+
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { setTokenAction,setUsernameAction} from '@/store/action/App'
+
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
-import { setToken,setUsername } from './../../utils/cookies'
+// import { setToken,setUsername } from './../../utils/cookies'
 // 验证
 import { validate_password,validate_email } from './../../utils/validate'
 
@@ -45,8 +50,10 @@ class LoginForm extends Component {
             })
             const data = res.data.data
             console.log(data,'3333')
-            setToken(data.token) //token存储
-            setUsername(data.username)
+            // action
+            this.props.actions.setToken(data.token)
+            this.props.actions.setUsername(data.username)
+            
             this.props.history.push('/index')
         }).catch(error => {
             this.setState({
@@ -136,4 +143,17 @@ class LoginForm extends Component {
         )
     }
 }
-export default withRouter(LoginForm)
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators({
+            setToken:setTokenAction,
+            setUsername:setUsernameAction
+        },dispatch)
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(withRouter(LoginForm))

@@ -3,12 +3,33 @@ import { Link } from 'react-router-dom'
 import  { Button,Switch, message } from 'antd'
 import { Status } from '@api/department'
 
-import TableComponent from '@c/tableData/Index'
+import TableComponent from '@c/tableData/Table'
+import FormSearch from '@c/formSearch/Index'
+
 
 class DepartmentList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            columns:[
+                
+            ],
+            formItem:[
+                {
+                    type:"Input", 
+                    label:"部门名称",
+                    name:"name",
+                    placeholder:"请输入部门名称"
+                },
+                {
+                    type:"Select", 
+                    label:"禁启用",
+                    name:"status",
+                    placeholder:"请选择",
+                    style:{width:"100px"},
+                    optionsKey:"status",
+                },
+            ],
             data:[],
             pageNumber:1,
             pageSize:10,
@@ -50,25 +71,16 @@ class DepartmentList extends Component {
                         }
                     }
                 ],
-                formItem:[
-                    {
-                        type:"Input", 
-                        label:"部门名称",
-                        name:"name",
-                        placeholder:"请输入部门名称"
-                    },
-                    {
-                        type:"Select", 
-                        label:"禁启用",
-                        name:"status",
-                        placeholder:"请选择",
-                        style:{width:"100px"},
-                        optionsKey:"status",
-                    },
-                ]
+                
             }
 
         }
+    }
+    componentDidMount() {
+        // Store.dispatch(addStatus({
+        //     label:"所有",
+        //     value:"all"
+        // }))
     }
     // 获取子组件实例
     getChildRef = (ref) => {
@@ -96,7 +108,8 @@ class DepartmentList extends Component {
     render() {
         return (
             <Fragment>
-                <TableComponent onRef={this.getChildRef} batchButton={true} config={this.state.tableConfig} />
+                <FormSearch formItem={this.state.formItem}/>
+                <TableComponent config={this.state.tableConfig} />
             </Fragment>
         )
     }

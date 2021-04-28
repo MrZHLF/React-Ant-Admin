@@ -1,12 +1,14 @@
 import { createStore,combineReducers } from 'redux';
 
-import configReducer from './reducer/Config'
-import departmentReducer from './reducer/Department'
+import config from './reducer/Config'
+import department from './reducer/Department'
+import app from './reducer/App'
 
 // 创建reducer对象
 const allReducer = {
-    config:configReducer,
-    department:departmentReducer
+    config,
+    department,
+    app
 }
 
 // 合并
