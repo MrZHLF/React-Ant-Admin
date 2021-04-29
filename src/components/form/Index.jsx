@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import {requestData} from '@api/common'
 import requestUrl from "@api/requestUrl"
 
+import SelectComponent from './../select/Index'
+
 import { Form,Input,Button, Select,InputNumber,Radio,message } from 'antd'
 const { Option } = Select;
 
@@ -76,6 +78,17 @@ class FormCom extends Component {
         )
     }
 
+    // select
+    SelectComponent = (item) => {
+        // 处理input
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
+                <SelectComponent url={item.url} propsKey={item.propsKey}/>
+            </Form.Item>
+        )
+    }
+
     radioElem = (item) => {
         const rules =  this.rules(item)
         return (
@@ -101,6 +114,10 @@ class FormCom extends Component {
         formItem.map(item => {
             if (item.type === 'Input') {
                 formList.push(this.inputElem(item)) 
+            }
+
+            if (item.type === 'SelectComponent') {
+                formList.push(this.SelectComponent(item)) 
             }
 
             if (item.type === 'Select') {
@@ -132,7 +149,6 @@ class FormCom extends Component {
             data:value
         }
         requestData(data).then(response => {
-            console.log(response,'response')
             let data = response.data
             message.info(data.message)
             this.setState({

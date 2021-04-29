@@ -1,10 +1,20 @@
 const requestUrl = {
     // table
+
+    /**
+     * 部门管理封装接口
+     */
     "departmentList":"/department/list/",
+    "getDepartmentList":"/department/departmentList/",
     "departmentListDelete":"/department/delete/",
-    // form api
     "departmentAdd":"/department/add/",
-    "departmentEdit":"/department/edit/"
+    "departmentEdit":"/department/edit/",
+
+    /**
+     * 职位管理接口
+     */
+    "jobList":"/job/list/",
+    "jobAdd":"/job/add/",
 }
 
 export default requestUrl
