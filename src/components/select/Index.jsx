@@ -13,6 +13,7 @@ class SelectComponent extends Component {
         this.state = {
             props:props.propsKey,
             options:[],
+            name: props.name,
             value:""
         }
     }
@@ -35,8 +36,18 @@ class SelectComponent extends Component {
             })
         })
     }
-    onChange =() => {
-        
+    onChange =(newCurrency) => {
+        this.setState({
+            value:newCurrency
+        })
+        this.triggerChange(newCurrency)
+    }
+    
+    triggerChange =(changedValue) => {
+        const onChange = this.props.onChange
+        if (onChange) {
+            onChange({[this.state.name]: changedValue})
+        }
     }
 
 

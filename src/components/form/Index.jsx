@@ -41,6 +41,13 @@ class FormCom extends Component {
         return rules
     }
 
+    validatorSelect= (rule,value) => {
+        if (!value || !value[rule.field]) {
+            return Promise.reject("选项不能为空")
+        }
+        return  Promise.resolve()
+    }
+
     inputElem = (item) => {
         // 处理input
         const rules =  this.rules(item)
@@ -83,8 +90,8 @@ class FormCom extends Component {
         // 处理input
         const rules =  this.rules(item)
         return (
-            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
-                <SelectComponent url={item.url} propsKey={item.propsKey}/>
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
+                <SelectComponent url={item.url} propsKey={item.propsKey} name={item.name}/>
             </Form.Item>
         )
     }
@@ -144,6 +151,15 @@ class FormCom extends Component {
         this.setState({
             loading:true
         })
+
+        // 数据格式化
+        const formatFormKey = this.props.formConfig.formatFormKey; 
+        if (formatFormKey && value[formatFormKey]) {
+            const dataKey = value[formatFormKey]
+            delete value.parentId
+            value = Object.assign(value,dataKey)
+        }
+
         const data = {
             url: requestUrl[this.props.formConfig.url],
             data:value

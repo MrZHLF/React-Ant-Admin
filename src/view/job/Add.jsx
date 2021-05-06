@@ -16,7 +16,8 @@ export default class DepartmentAdd extends Component {
                     number:0,
                     status:true
                 },
-                setFieldValue:{}
+                setFieldValue:{},
+                formatFormKey:"parentId"
             },
             formLayout:{
                 labelCol:{span:2  },
@@ -133,7 +134,7 @@ export default class DepartmentAdd extends Component {
     render() {
         return (
             <Fragment>
-                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit}></FormCom>
+                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} ></FormCom>
             </Fragment>
         )
     }
