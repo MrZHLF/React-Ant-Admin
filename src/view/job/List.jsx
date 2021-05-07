@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import  { Button,Switch, message } from 'antd'
-import { Status } from '@api/department'
+import { Status } from '@api/job'
 
 import TableComponent from '@c/tableData/Index'
 
@@ -18,10 +18,7 @@ class JobList extends Component {
             // 配置项
             tableConfig:{
                 url:"jobList",
-                deleteUrl:"departmentListDelete",
-                method:"post",
                 checkbox:true,
-                rowkey:"id",
                 thead:[
                     {
                         title:"职位名称",
@@ -50,9 +47,9 @@ class JobList extends Component {
                             return (
                                 <div className="inline-button">
                                     <Button type="primary">
-                                        <Link to={{pathname:'/index/department/add',state:{id:rowData.id}}}>编辑</Link>
+                                        <Link to={{pathname:'/index/job/add',state:{id:rowData.jobId}}}>编辑</Link>
                                     </Button>
-                                    <Button onClick={()=>this.delete(rowData.id)}>删除</Button>
+                                    <Button onClick={()=>this.delete(rowData.jobId)}>删除</Button>
                                 </div>
                             )
                         }
@@ -85,12 +82,11 @@ class JobList extends Component {
 
     onHandlerSwitch(data) {
         // 禁启用
-        if (!data.status) {return false}
         const requestData = {
-            id:data.id,
-            status:data.status === "1" ? false : true
+            id:data.jobId,
+            status: !data.status
         }
-        this.setState({switchId:data.id})
+        this.setState({switchId:data.jobId})
         Status(requestData).then(response => {
             message.info(response.data.message)
             this.setState({switchId:""})

@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 import { message  } from 'antd'
 
-import { DepartmentAddApi,Detailed,Edit } from '../../api/department'
+import { Add,Detailed } from '../../api/job'
 
 import FormCom from '@c/form/Index'
 export default class DepartmentAdd extends Component {
@@ -9,9 +9,10 @@ export default class DepartmentAdd extends Component {
         super(props);
         this.state={
             loading:false,
-            id:"",
+            id:this.props.location.state ? this.props.location.state.id : "",
             formConfig:{
                 url:"jobAdd",
+                editKey:"",
                 initValue:{
                     number:0,
                     status:true
@@ -83,11 +84,12 @@ export default class DepartmentAdd extends Component {
         // 获取表单详情
         if(!this.props.location.state) {return false}
         Detailed({id:this.state.id}).then(response => {
-            console.log(response)
             this.setState({
                 formConfig:{
                     ...this.state.formConfig,
-                    setFieldValue:response.data.data
+                    setFieldValue: response.data.data,
+                    url: "jobEdit",
+                    editKey:"jobId"
                 }
             })
             // this.refs.form.setFieldsValue(response.data.data)
@@ -100,7 +102,7 @@ export default class DepartmentAdd extends Component {
 
     // 添加信息
     onHandleAdd = (value) => {
-        DepartmentAddApi(value).then(response => {
+        Add(value).then(response => {
             console.log(response,'response')
             let data = response.data
             message.info(data.message)
@@ -119,17 +121,17 @@ export default class DepartmentAdd extends Component {
     onHandleEdit = (value) => {
         const requestData = value
         requestData.id = this.state.id
-        Edit(requestData).then(response => {
-            let data = response.data
-            message.info(data.message)
-            this.setState({
-                loading:false
-            })
-        }).catch(error=>{
-            this.setState({
-                loading:false
-            })
-        })
+        // Edit(requestData).then(response => {
+        //     let data = response.data
+        //     message.info(data.message)
+        //     this.setState({
+        //         loading:false
+        //     })
+        // }).catch(error=>{
+        //     this.setState({
+        //         loading:false
+        //     })
+        // })
     }
     render() {
         return (

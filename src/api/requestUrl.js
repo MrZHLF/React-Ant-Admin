@@ -15,6 +15,8 @@ const requestUrl = {
      */
     "jobList":"/job/list/",
     "jobAdd":"/job/add/",
+    "jobEdit":"/job/edit/",
+    "jobListDelete":"/job/delete/",
 }
 
 export default requestUrl

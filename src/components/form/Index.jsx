@@ -42,10 +42,10 @@ class FormCom extends Component {
     }
 
     validatorSelect= (rule,value) => {
-        if (!value || !value[rule.field]) {
-            return Promise.reject("选项不能为空")
+        if (value || value[rule.field]) {
+            return  Promise.resolve()
         }
-        return  Promise.resolve()
+        return Promise.reject("选项不能为空")
     }
 
     inputElem = (item) => {
@@ -142,6 +142,30 @@ class FormCom extends Component {
 
         return formList
     }
+
+    formatData = (value) => {
+        // const formatFormKey = this.props.formConfig.formatFormKey; 
+        // if (formatFormKey && value[formatFormKey]) {
+        //     const dataKey = value[formatFormKey]
+        //     delete value.parentId
+        //     value = Object.assign(value,dataKey)
+        // }
+
+        const requestData = JSON.parse(JSON.stringify(value))
+        // 需要格式化的 JSON对象的key
+        const { formatFormKey, editKey, setFieldValue } = this.props.formConfig;
+        const keyValue = requestData[formatFormKey]
+        // 如果是json对象
+        if (Object.prototype.toString.call(keyValue) == "[object Object]") {
+            requestData[formatFormKey] = keyValue[formatFormKey]
+        }
+        // 判断是否存在编辑知道id
+        if (editKey) {
+            requestData[editKey] = setFieldValue[editKey]
+        }
+        return requestData
+    }
+
     onSubmit = (value) => {
         // 添加 
         if (this.props.submit) {
@@ -153,16 +177,11 @@ class FormCom extends Component {
         })
 
         // 数据格式化
-        const formatFormKey = this.props.formConfig.formatFormKey; 
-        if (formatFormKey && value[formatFormKey]) {
-            const dataKey = value[formatFormKey]
-            delete value.parentId
-            value = Object.assign(value,dataKey)
-        }
+        let paramsData = this.formatData(value)
 
         const data = {
             url: requestUrl[this.props.formConfig.url],
-            data:value
+            data: paramsData
         }
         requestData(data).then(response => {
             let data = response.data
@@ -170,7 +189,7 @@ class FormCom extends Component {
             this.setState({
                 loading:false
             })
-            this.refs.form.resetFields()
+            // this.refs.form.resetFields()
         }).catch(error => {
             this.setState({
                 loading:false

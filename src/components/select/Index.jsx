@@ -22,6 +22,24 @@ class SelectComponent extends Component {
         this.getSelectList()
     }
 
+    static getDerivedStateFromProps(nextProps,prevState) {
+        let { value, name } = nextProps
+        if (!value) { return false }
+
+        // 判断是否是JSON对象
+        if (Object.prototype.toString.call(value) == "[object Object]") {
+            value = value[name] 
+            return false
+        }
+
+        if(value != prevState.value) {
+            return {
+                value:value
+            }
+        }
+        return null
+    }
+
     // 接口
     getSelectList = () => {
         let url = this.props.url;
