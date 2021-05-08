@@ -2,7 +2,7 @@
 const files = require.context("../../view/", true, /\.jsx$/);
 const components = []; //声明组件
 // 循环文件
-files.keys().map(key => {
+files.keys().forEach(key => {
   if (key.includes('./index/') || key.includes('./login/')) {
     return false
   }

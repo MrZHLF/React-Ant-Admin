@@ -7,7 +7,7 @@ import {requestData} from '@api/common'
 import FormCom from '@c/form/Index'
 import { Add,Detailed } from '../../api/job'
 const { Option } = Select;
-export default class DepartmentAdd extends Component {
+export default class JobtAdd extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -34,7 +34,7 @@ export default class DepartmentAdd extends Component {
                     label:"部门 ",
                     name:"parentId",
                     required:true,
-                    slotName:"job",
+                    slotName:"department",
                     style:{
                         width:"200px"
                     },
@@ -152,7 +152,7 @@ export default class DepartmentAdd extends Component {
             <Fragment>
                 <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} >
                     {/* 插槽 */}
-                    <Select ref="job">
+                    <Select ref="department">
                         {
                             this.state.select && this.state.select.map(elem => {
                                 return <Option key={elem.id} value={elem.id}>{elem.name}</Option>

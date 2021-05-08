@@ -5,7 +5,7 @@ import { Status } from '@api/job'
 
 import TableComponent from '@c/tableData/Index'
 
-class JobList extends Component {
+class StaffList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -106,4 +106,4 @@ class JobList extends Component {
         )
     }
 }
-export default JobList
+export default StaffList

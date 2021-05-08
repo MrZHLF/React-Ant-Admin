@@ -6,8 +6,12 @@ import requestUrl from "@api/requestUrl"
 
 import SelectComponent from './../select/Index'
 
-import { Form,Input,Button, Select,InputNumber,Radio,message } from 'antd'
+import 'moment/locale/zh-cn';
+import locale from 'antd/es/date-picker/locale/zh_CN';
+
+import { Form,Input,Button, Select,InputNumber,Radio,message,DatePicker } from 'antd'
 const { Option } = Select;
+
 
 
 class FormCom extends Component {
@@ -111,6 +115,16 @@ class FormCom extends Component {
         )
     }
 
+    // 日期组件
+    dateElem = (item) => {
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
+                <DatePicker locale={locale}  format={item.format} picker={item.mode}/>
+            </Form.Item>
+        )
+    }
+
     // 插槽
     slotElem = (item) => {
         const rules =  this.rules(item)
@@ -127,6 +141,15 @@ class FormCom extends Component {
         )
     }
 
+    // 栏目
+    columnElem = (item) => {
+        return (
+            <div className="form-column">
+                <h4>{item.label}</h4>
+            </div>
+        )
+    }
+
     // 初始化
     initFormItem = () => {
         const { formItem } = this.props
@@ -134,7 +157,7 @@ class FormCom extends Component {
         
         const formList = [];
 
-        formItem.map(item => {
+        formItem.forEach(item => {
             if (item.type === 'Input') {
                 formList.push(this.inputElem(item)) 
             }
@@ -155,8 +178,16 @@ class FormCom extends Component {
                 formList.push(this.radioElem(item))
             }
 
+            if(item.type === 'Date') {
+                formList.push(this.dateElem(item))
+            }
+
             if(item.type === 'Slot') {
                 formList.push(this.slotElem(item))
+            }
+
+            if(item.type === 'Column') {
+                formList.push(this.columnElem(item))
             }
         })
 
@@ -176,7 +207,7 @@ class FormCom extends Component {
         const { formatFormKey, editKey, setFieldValue } = this.props.formConfig;
         const keyValue = requestData[formatFormKey]
         // 如果是json对象
-        if (Object.prototype.toString.call(keyValue) == "[object Object]") {
+        if (Object.prototype.toString.call(keyValue) === "[object Object]") {
             requestData[formatFormKey] = keyValue[formatFormKey]
         }
         // 判断是否存在编辑知道id
