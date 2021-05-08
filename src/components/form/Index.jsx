@@ -111,6 +111,22 @@ class FormCom extends Component {
         )
     }
 
+    // 插槽
+    slotElem = (item) => {
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
+                {/* { this.props.children ? this.props.children.filter(elem => elem.ref == item.slotName)[0] : '' } */}
+                {/* 判断传递过来的是否是数组或者对象 */}
+
+                {
+                    this.props.children && Array.isArray(this.props.children) ? this.props.children.filter(elem => elem.ref == item.slotName)[0] : this.props.children
+                }
+
+            </Form.Item>
+        )
+    }
+
     // 初始化
     initFormItem = () => {
         const { formItem } = this.props
@@ -137,6 +153,10 @@ class FormCom extends Component {
 
             if(item.type === 'Radio') {
                 formList.push(this.radioElem(item))
+            }
+
+            if(item.type === 'Slot') {
+                formList.push(this.slotElem(item))
             }
         })
 

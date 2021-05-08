@@ -1,15 +1,19 @@
 import React, { Component,Fragment } from 'react'
-import { message  } from 'antd'
+import { message ,Select } from 'antd'
 
-import { Add,Detailed } from '../../api/job'
+import requestUrl from "@api/requestUrl"
+import {requestData} from '@api/common'
 
 import FormCom from '@c/form/Index'
+import { Add,Detailed } from '../../api/job'
+const { Option } = Select;
 export default class DepartmentAdd extends Component {
     constructor(props) {
         super(props);
         this.state={
             loading:false,
             id:this.props.location.state ? this.props.location.state.id : "",
+            select:[],
             formConfig:{
                 url:"jobAdd",
                 editKey:"",
@@ -26,15 +30,11 @@ export default class DepartmentAdd extends Component {
             },
             formItem:[
                 {
-                    type:"SelectComponent", 
+                    type:"Slot", 
                     label:"部门 ",
                     name:"parentId",
                     required:true,
-                    url:"getDepartmentList",
-                    propsKey:{
-                        value:"id",
-                        label:"name"
-                    },
+                    slotName:"job",
                     style:{
                         width:"200px"
                     },
@@ -79,6 +79,7 @@ export default class DepartmentAdd extends Component {
     }
     componentDidMount() {
         this.getDerailed()
+        this.getSelectList()
     }
     getDerailed() {
         // 获取表单详情
@@ -98,6 +99,19 @@ export default class DepartmentAdd extends Component {
     onSubmit = (value) => {
         this.state.id ? this.onHandleEdit(value) : this.onHandleAdd(value)
         
+    }
+
+    // 接口
+    getSelectList = () => {
+        const data = {
+            url:requestUrl["getDepartmentList"]
+        }
+        if (!data.url) {return false}
+        requestData(data).then(response => {
+            this.setState({
+                select:response.data.data.data
+            })
+        })
     }
 
     // 添加信息
@@ -136,7 +150,16 @@ export default class DepartmentAdd extends Component {
     render() {
         return (
             <Fragment>
-                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} ></FormCom>
+                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} >
+                    {/* 插槽 */}
+                    <Select ref="job">
+                        {
+                            this.state.select && this.state.select.map(elem => {
+                                return <Option key={elem.id} value={elem.id}>{elem.name}</Option>
+                            })
+                        }
+                    </Select>
+                </FormCom>
             </Fragment>
         )
     }
