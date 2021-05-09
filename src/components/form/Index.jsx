@@ -5,7 +5,7 @@ import {requestData} from '@api/common'
 import requestUrl from "@api/requestUrl"
 
 import SelectComponent from './../select/Index'
-
+import UploadComponent from './../upload/Index'
 import 'moment/locale/zh-cn';
 import locale from 'antd/es/date-picker/locale/zh_CN';
 
@@ -21,7 +21,9 @@ class FormCom extends Component {
             mesPreixr:{
                 "Input": "请输入",
                 "Radio": "请选择",
-                "Select": "请选择"
+                "Date": "请选择",
+                "Select": "请选择",
+                "Upload": "请上传"
             },
             loading:false
         }
@@ -52,8 +54,8 @@ class FormCom extends Component {
         return Promise.reject("选项不能为空")
     }
 
+    // 处理input
     inputElem = (item) => {
-        // 处理input
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
@@ -62,8 +64,8 @@ class FormCom extends Component {
         )
     }
 
+    // 处理inputnumber
     inputNumberElem = (item) => {
-        // 处理inputnumber
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
@@ -74,7 +76,6 @@ class FormCom extends Component {
 
     // select
     selectElem = (item) => {
-        // 处理input
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
@@ -89,9 +90,8 @@ class FormCom extends Component {
         )
     }
 
-    // select
+    // select组件
     SelectComponent = (item) => {
-        // 处理input
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
@@ -100,6 +100,7 @@ class FormCom extends Component {
         )
     }
 
+    // 单选
     radioElem = (item) => {
         const rules =  this.rules(item)
         return (
@@ -121,6 +122,15 @@ class FormCom extends Component {
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}>
                 <DatePicker locale={locale}  format={item.format} picker={item.mode}/>
+            </Form.Item>
+        )
+    }
+    // 上传
+    uploadElem = (item) => {
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
+                <UploadComponent name={item.name}></UploadComponent>
             </Form.Item>
         )
     }
@@ -180,6 +190,10 @@ class FormCom extends Component {
 
             if(item.type === 'Date') {
                 formList.push(this.dateElem(item))
+            }
+            
+            if(item.type === 'Upload') {
+                formList.push(this.uploadElem(item))
             }
 
             if(item.type === 'Slot') {

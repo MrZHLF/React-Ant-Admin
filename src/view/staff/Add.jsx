@@ -9,6 +9,9 @@ import locale from 'antd/es/date-picker/locale/zh_CN';
 
 import FormCom from '@c/form/Index'
 import { Add,Detailed } from '../../api/job'
+
+import { nation,face,education } from '@/js/data'
+import { validate_phone } from '@/utils/validate'
 export default class StaffAdd extends Component {
     constructor(props) {
         super(props);
@@ -50,6 +53,9 @@ export default class StaffAdd extends Component {
                     label:"性别",
                     name:"sex",
                     required:true,
+                    style:{
+                        width:"200px"
+                    },
                     options:[
                         {label:"男",value:true},
                         {label:"女",value:false}
@@ -64,10 +70,20 @@ export default class StaffAdd extends Component {
                     placeholder:"请输入身份证名"
                 },
                 {
+                    type: "Upload",
+                    label: "头像", 
+                    required: true,
+                    name: "face_img", 
+                    message: "请上传头像"
+                },
+                {
                     type:"Date", 
                     label:"出生年月",
                     name:"birthday",
                     format:"YYYY/MM",
+                    style:{
+                        width:"200px"
+                    },
                     mode:"month",
                     required:true
                 },
@@ -77,7 +93,19 @@ export default class StaffAdd extends Component {
                     name:"phone",
                     required:true,
                     style:{width:"200px"},
-                    placeholder:"请输入11位数字的手机号"
+                    placeholder:"请输入11位数字的手机号",
+                    rules:[ //自定义校验
+                        ()=>({
+                            validator(rule,value) {
+                                // let regPhone = /^1[3456789]\d{9}$/;
+                                if (validate_phone(value)) {
+                                    return Promise.resolve()
+                                } else {
+                                    return Promise.reject('手机号码有误')
+                                }
+                            }
+                        })
+                    ]
                 },
                 {
                     type:"Select", 
@@ -85,9 +113,7 @@ export default class StaffAdd extends Component {
                     name:"nation",
                     required:true,
                     style:{width:"200px"},
-                    options:[
-                        {label:"汉族",value:"1"}
-                    ],
+                    options:nation,
                     placeholder:"请输选择民族"
                 },
                 {
@@ -96,45 +122,44 @@ export default class StaffAdd extends Component {
                     name:"political",
                     required:true,
                     style:{width:"200px"},
-                    options:[
-                        {label:"党员",value:"1"},
-                        {label:"团员",value:"2"}
-                    ],
+                    options:face,
                     placeholder:"请输选择政治面貌"
                 },
                 {
                     type: "Input",
                     label: "毕业院校", 
                     name: "school",
-                    required: true
+                    required: true,
+                    style:{width:"200px"},
                 },
                 {
                     type: "Select",
                     label: "学历", 
                     name: "education",
-                    options:[
-                        {label:"大专",value:"1"},
-                        {label:"本科",value:"2"}
-                    ],
-                    required: true
+                    options:education,
+                    required: true,
+                    style:{width:"200px"},
                 },
                 { 
                     type: "Input",
                     label: "专业", 
                     name: "major",
-                    required: true
+                    required: true,
+                    style:{width:"200px"},
                 },
                 { 
                     type: "Input",
                     label: "微信号", 
                     name: "wechat",
-                    required: true
+                    required: true,
+                    style:{width:"200px"},
                 },
                 { 
                     type: "Input",
                     label: "邮箱", 
                     name: "email",
-                    required: true
+                    required: true,
+                    style:{width:"200px"},
                 },
                 {
                     type:"Column",
@@ -164,7 +189,8 @@ export default class StaffAdd extends Component {
                     type:"Slot", 
                     label:"职位状态 ",
                     name:"parentId",
-                    slotName:"jobStatus"
+                    slotName:"jobStatus",
+                    style:{width:"200px"},
                 },
                 {
                     type:"Input", 

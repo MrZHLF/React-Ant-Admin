@@ -14,7 +14,7 @@ export function validate_pass(value){
     return reg_password.test(value)
 }
 /**
- * 检验手机号
+ *  检验手机号
  */
 export function validate_phone(value){
     return reg_phone.test(value);
