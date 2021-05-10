@@ -24,8 +24,8 @@ class UploadComponent extends Component {
 
     getUploadToken = () => {
         return UploadToken({
-            ak:"UAYFKdST8sQD_Zgq3KX72g66pjX0yacTLYrBOPvP",
-            sk:"FYoqvNOUUtIxTSMViEi0rXJGEouUex2lvDNI8kDN",
+            ak:"",
+            sk:"",
             buckety:"react-upload"
         }).then(response => {
             console.log(response,'response')
@@ -80,7 +80,7 @@ class UploadComponent extends Component {
         }
         if (info.file.status === 'done') {
             const fileInfo = info.file.response;
-            const imageUrl =  `http://qsw46fb48.hn-bkt.clouddn.com/${fileInfo.key}`
+            const imageUrl =  `填写自己/${fileInfo.key}`
             this.setState({
                 imageUrl,
                 loading: false,
