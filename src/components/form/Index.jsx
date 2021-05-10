@@ -209,13 +209,6 @@ class FormCom extends Component {
     }
 
     formatData = (value) => {
-        // const formatFormKey = this.props.formConfig.formatFormKey; 
-        // if (formatFormKey && value[formatFormKey]) {
-        //     const dataKey = value[formatFormKey]
-        //     delete value.parentId
-        //     value = Object.assign(value,dataKey)
-        // }
-
         const requestData = JSON.parse(JSON.stringify(value))
         // 需要格式化的 JSON对象的key
         const { formatFormKey, editKey, setFieldValue } = this.props.formConfig;

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import {UploadToken} from '@/api/common'
+
 import { Upload,message  } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 class UploadComponent extends Component {
@@ -8,12 +10,33 @@ class UploadComponent extends Component {
         this.state = {
             imageUrl: "",
             loading: false,
-            name: props.name
+            name: props.name,
+            uploadKey: {
+                token:"",
+                key:""
+            }
         }
     }
 
     componentDidMount() {
+        // this.getUploadToken()
+    }
 
+    getUploadToken = () => {
+        return UploadToken({
+            ak:"UAYFKdST8sQD_Zgq3KX72g66pjX0yacTLYrBOPvP",
+            sk:"FYoqvNOUUtIxTSMViEi0rXJGEouUex2lvDNI8kDN",
+            buckety:"react-upload"
+        }).then(response => {
+            console.log(response,'response')
+            let data = response.data.data
+            return data.token
+            // this.setState({
+            //     uploadKey: {
+            //         token: data.token
+            //     }
+            // })
+        })
     }
 
     // 图片转base64
@@ -24,7 +47,9 @@ class UploadComponent extends Component {
     }
 
     // 上传之前
-    beforeUpload = (file) => {
+    beforeUpload = async (file) => {
+        const token = await this.getUploadToken()
+
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
             message.error('You can only upload JPG/PNG file!');
@@ -33,6 +58,17 @@ class UploadComponent extends Component {
         if (!isLt2M) {
             message.error('Image must smaller than 2MB!');
         }
+
+        // 解析文件
+        const name = file.name;
+        const key = encodeURI(`${name}`)
+        // 更新文件的key
+        this.setState({
+            uploadKey: {
+                token,
+                key
+            }
+        })
         return isJpgOrPng && isLt2M;
     }
 
@@ -43,16 +79,26 @@ class UploadComponent extends Component {
             return;
         }
         if (info.file.status === 'done') {
-            this.getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
-                    imageUrl,
-                    loading: false,
-                },() => {
-                    this.triggerChange(imageUrl)
-                }),
-            );
+            const fileInfo = info.file.response;
+            const imageUrl =  `http://qsw46fb48.hn-bkt.clouddn.com/${fileInfo.key}`
+            this.setState({
+                imageUrl,
+                loading: false,
+            },() => {
+                this.triggerChange(imageUrl)
+            })
+
+            // this.getBase64(info.file.originFileObj, imageUrl =>
+            //     this.setState({
+            //         imageUrl,
+            //         loading: false,
+            //     },() => {
+            //         this.triggerChange(imageUrl)
+            //     }),
+            // );
         }
-    };
+    }
+
 
     // 返回数据
     triggerChange =(changedValue) => {
@@ -73,11 +119,12 @@ class UploadComponent extends Component {
         );
         return (
             <Upload
-                name="avatar"
+                name="file"
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                data={this.state.uploadKey}
+                action="https://up-z2.qiniup.com"
                 beforeUpload={this.beforeUpload}
                 onChange={this.handleChange}
             >

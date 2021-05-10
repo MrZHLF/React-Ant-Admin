@@ -36,3 +36,15 @@ import service from './../utils/request'
         data: params.data || {},
     })
 }
+
+/**
+ *  七牛云上传
+ * @param {data} data 
+ */
+ export function UploadToken(data){
+    return service.request({
+        url: "/uploadIToken/",
+        method: "post",
+        data
+    })
+}
