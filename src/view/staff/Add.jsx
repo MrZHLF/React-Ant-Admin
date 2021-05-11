@@ -2,7 +2,7 @@ import React, { Component,Fragment } from 'react'
 import { message,Row,Col,Radio ,DatePicker } from 'antd'
 
 import requestUrl from "@api/requestUrl"
-import {requestData,Upload} from '@api/common'
+import {requestData} from '@api/common'
 
 import 'moment/locale/zh-cn';
 import locale from 'antd/es/date-picker/locale/zh_CN';
@@ -13,7 +13,6 @@ import { Add,Detailed } from '../../api/job'
 import { nation,face,education } from '@/js/data'
 import { validate_phone } from '@/utils/validate'
 
-import { Editor } from '@tinymce/tinymce-react'
 
 export default class StaffAdd extends Component {
     constructor(props) {
@@ -75,6 +74,7 @@ export default class StaffAdd extends Component {
                 {
                     type: "Upload",
                     label: "头像", 
+                    request: true,
                     required: true,
                     name: "face_img", 
                     message: "请上传头像"
@@ -151,6 +151,13 @@ export default class StaffAdd extends Component {
                     style:{width:"200px"},
                 },
                 { 
+                    type: "Upload",
+                    label: "毕业证", 
+                    name: "diploma_img", 
+                    required: true,
+                    message: "请上传毕业证"
+                },
+                { 
                     type: "Input",
                     label: "微信号", 
                     name: "wechat",
@@ -196,10 +203,9 @@ export default class StaffAdd extends Component {
                     style:{width:"200px"},
                 },
                 {
-                    type:"Input", 
+                    type:"Editor", 
                     label:"描述",
                     name:"content",
-                    required:true,
                     placeholder:"请输入描述内容"
                 }
             ]
@@ -282,40 +288,8 @@ export default class StaffAdd extends Component {
         //     })
         // })
     }
-
-    // 获取富文本内容
-
-    handleEditorChange = (value) => {
-        console.log(value)
-    }
-
     render() {
-        const editorObj = {
-            height: '800px',
-            language: 'zh_CN',
-            plugins: 'table lists link image preview code',
-            toolbar: `formatselect | code | preview | bold italic strikethrough forecolor backcolor | 
-            link image | alignleft aligncenter alignright alignjustify  | 
-            numlist bullist outdent indent`,
-            relative_urls: false,
-            file_picker_types: 'image',
-            images_upload_url: 'http',
-            image_advtab: true,
-            image_uploadtab: true,
-            images_upload_handler: (blobInfo, success, failure)=>{
-                var formData;
-                var file = blobInfo.blob(); //转化为易于理解的file对象
-                formData = new FormData();
-                formData.append('file', file, file.name);//此处与源文档不一样
-                Upload(formData).then(response => {
-                    const data = response.data.data.url;
-                    success(data);
-                }).catch(error => {
-                    const data = error.data;
-                    failure(data.message);
-                })
-            }
-        }
+        
         return (
             <Fragment>
                 <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} >
@@ -340,16 +314,6 @@ export default class StaffAdd extends Component {
                         </Row>
                     </div>
                 </FormCom>
-                <Editor
-                    inline={false}
-                    selector="editorStateRef"
-                    apiKey=""
-                    initialValue={"62626"}
-                    init={{...editorObj}} //初始化配置
-                    onEditorChange={this.handleEditorChange}
-                >
-                    
-                </Editor>
             </Fragment>
         )
     }

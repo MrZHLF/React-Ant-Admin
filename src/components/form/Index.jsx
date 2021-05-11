@@ -6,6 +6,8 @@ import requestUrl from "@api/requestUrl"
 
 import SelectComponent from './../select/Index'
 import UploadComponent from './../upload/Index'
+import EditorComponent from './../editor/Index'
+
 import 'moment/locale/zh-cn';
 import locale from 'antd/es/date-picker/locale/zh_CN';
 
@@ -20,6 +22,7 @@ class FormCom extends Component {
         this.state = {
             mesPreixr:{
                 "Input": "请输入",
+                "Editor": "请输入",
                 "Radio": "请选择",
                 "Date": "请选择",
                 "Select": "请选择",
@@ -130,7 +133,17 @@ class FormCom extends Component {
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
-                <UploadComponent name={item.name}></UploadComponent>
+                <UploadComponent name={item.name} request={item.request}></UploadComponent>
+            </Form.Item>
+        )
+    }
+
+    // 富文本编辑器
+    editorElem = (item) => {
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
+                <EditorComponent name={item.name}></EditorComponent>
             </Form.Item>
         )
     }
@@ -194,6 +207,9 @@ class FormCom extends Component {
             
             if(item.type === 'Upload') {
                 formList.push(this.uploadElem(item))
+            }
+            if(item.type === 'Editor') {
+                formList.push(this.editorElem(item))
             }
 
             if(item.type === 'Slot') {

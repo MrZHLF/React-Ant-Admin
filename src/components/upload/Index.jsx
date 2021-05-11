@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+// import PropTypes from 'prop-types'
 import {UploadToken} from '@/api/common'
 
 import { Upload,message  } from 'antd'
@@ -24,12 +24,13 @@ class UploadComponent extends Component {
 
     getUploadToken = () => {
         return UploadToken({
-            ak:"",
-            sk:"",
+            ak:"UAYFKdST8sQD_Zgq3KX72g66pjX0yacTLYrBOPvP",
+            sk:"FYoqvNOUUtIxTSMViEi0rXJGEouUex2lvDNI8kDN",
             buckety:"react-upload"
         }).then(response => {
             console.log(response,'response')
             let data = response.data.data
+            localStorage.setItem('uploadToken',data.token)
             return data.token
             // this.setState({
             //     uploadKey: {
@@ -48,7 +49,12 @@ class UploadComponent extends Component {
 
     // 上传之前
     beforeUpload = async (file) => {
-        const token = await this.getUploadToken()
+
+        const uploadToken= localStorage.getItem('uploadToken')
+
+
+        // if(!this.props.request && !uploadToken) { return false }
+        const token = uploadToken ||  await this.getUploadToken()
 
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
@@ -80,7 +86,7 @@ class UploadComponent extends Component {
         }
         if (info.file.status === 'done') {
             const fileInfo = info.file.response;
-            const imageUrl =  `填写自己/${fileInfo.key}`
+            const imageUrl =  `http://qsw46fb48.hn-bkt.clouddn.com/${fileInfo.key}`
             this.setState({
                 imageUrl,
                 loading: false,
@@ -134,5 +140,13 @@ class UploadComponent extends Component {
     }
 }
 
+// 类型检测
+// UploadComponent.propTypes = {
+//     request:PropTypes.bool,
+// }
+// // 默认值
+// UploadComponent.defaultProps = {
+//     request: false
+// }
 
 export default UploadComponent
