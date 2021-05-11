@@ -11,7 +11,7 @@ import EditorComponent from './../editor/Index'
 import 'moment/locale/zh-cn';
 import locale from 'antd/es/date-picker/locale/zh_CN';
 
-import { Form,Input,Button, Select,InputNumber,Radio,message,DatePicker } from 'antd'
+import { Form,Input,Button, Select,InputNumber,Radio,message,DatePicker,Row,Col } from 'antd'
 const { Option } = Select;
 
 
@@ -26,6 +26,7 @@ class FormCom extends Component {
                 "Radio": "请选择",
                 "Date": "请选择",
                 "Select": "请选择",
+                "SelectComponent": "请选择",
                 "Upload": "请上传"
             },
             loading:false
@@ -50,11 +51,11 @@ class FormCom extends Component {
         return rules
     }
 
-    validatorSelect= (rule,value) => {
-        if (value || value[rule.field]) {
+    validatorComponents= (rule,value) => {
+        if (value) {
             return  Promise.resolve()
         }
-        return Promise.reject("选项不能为空")
+        return Promise.reject("")
     }
 
     // 处理input
@@ -93,16 +94,7 @@ class FormCom extends Component {
         )
     }
 
-    // select组件
-    SelectComponent = (item) => {
-        const rules =  this.rules(item)
-        return (
-            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
-                <SelectComponent url={item.url} propsKey={item.propsKey} name={item.name}/>
-            </Form.Item>
-        )
-    }
-
+    
     // 单选
     radioElem = (item) => {
         const rules =  this.rules(item)
@@ -128,11 +120,24 @@ class FormCom extends Component {
             </Form.Item>
         )
     }
+
+    // select组件
+    SelectComponent = (item) => {
+        const rules =  this.rules(item)
+        return (
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorComponents}]}>
+                <SelectComponent url={item.url} propsKey={item.propsKey} name={item.name}/>
+            </Form.Item>
+        )
+    }
+
+
+
     // 上传
     uploadElem = (item) => {
         const rules =  this.rules(item)
         return (
-            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorComponents}]}>
                 <UploadComponent name={item.name} request={item.request}></UploadComponent>
             </Form.Item>
         )
@@ -166,10 +171,38 @@ class FormCom extends Component {
 
     // 栏目
     columnElem = (item) => {
+        const rules =  this.rules(item)
         return (
-            <div className="form-column">
-                <h4>{item.label}</h4>
-            </div>
+            <Row>
+                <Col span={2} className=""></Col>
+                <Col span={22}></Col>
+            </Row>
+        )
+    }
+
+    // 内联的控件
+    formItemInlineElem = (item) => {
+        // const rules = this.rules(item);
+        return (
+            <Row>
+                <Col span={item.col_label} className="ant-form-item" style={{textAlign: "right"}}>
+                    <div className="ant-form-item-label">
+                        <label for="name" className="ant-form-item-required" title="姓名">{item.label}</label>
+                    </div>
+                </Col>
+                <Col span={item.col_control}>
+                    <Row>
+                        {
+                            item.inline_item.map(elem => {
+                                return (
+                                    <Col span={elem.col} className="form-item-inline-control">{ this.createControl(elem)}</Col>
+                                )
+                            })
+                        }
+                        
+                    </Row>
+                </Col>
+            </Row>
         )
     }
 
@@ -177,51 +210,32 @@ class FormCom extends Component {
     initFormItem = () => {
         const { formItem } = this.props
         if (!formItem || (formItem && formItem.length === 0)) { return false; }
-        
-        const formList = [];
+        //第一种
+        // const formList = [];
+        // formItem.forEach(item => {
+        //     if (item.type === 'Input') {formList.push(this.inputElem(item)) }
+        // })
+        // return formList
 
-        formItem.forEach(item => {
-            if (item.type === 'Input') {
-                formList.push(this.inputElem(item)) 
-            }
-
-            if (item.type === 'SelectComponent') {
-                formList.push(this.SelectComponent(item)) 
-            }
-
-            if (item.type === 'Select') {
-                formList.push(this.selectElem(item)) 
-            }
-
-            if(item.type === 'InputNumber') {
-                formList.push(this.inputNumberElem(item))
-            }
-
-            if(item.type === 'Radio') {
-                formList.push(this.radioElem(item))
-            }
-
-            if(item.type === 'Date') {
-                formList.push(this.dateElem(item))
-            }
-            
-            if(item.type === 'Upload') {
-                formList.push(this.uploadElem(item))
-            }
-            if(item.type === 'Editor') {
-                formList.push(this.editorElem(item))
-            }
-
-            if(item.type === 'Slot') {
-                formList.push(this.slotElem(item))
-            }
-
-            if(item.type === 'Column') {
-                formList.push(this.columnElem(item))
-            }
+        // 第二种
+        let formList =  formItem.map(item => {
+            return this.createControl(item)
         })
-
         return formList
+    }
+    // 创建表单控件
+    createControl = (item) => {
+        if(item.type === "Input") { return this.inputElem(item); }
+        if(item.type === "Select") { return this.selectElem(item); }
+        if(item.type === "SelectComponent") { return this.SelectComponent(item); }
+        if(item.type === "InputNumber") { return this.inputNumberElem(item); }
+        if(item.type === "Radio") { return this.radioElem(item); }
+        if(item.type === "Slot") { return this.slotElem(item); }
+        if(item.type === "Column") { return this.columnElem(item); }
+        if(item.type === "Date") { return this.dateElem(item); }
+        if(item.type === "Upload") { return this.uploadElem(item); }
+        if(item.type === "Editor") { return this.editorElem(item); }
+        if(item.type === "FormItemInline") { return this.formItemInlineElem(item); }
     }
 
     formatData = (value) => {

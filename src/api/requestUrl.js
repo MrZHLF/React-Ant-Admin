@@ -14,9 +14,13 @@ const requestUrl = {
      * 职位管理接口
      */
     "jobList":"/job/list/",
+    "jobListAll":"/job/listAll/",
     "jobAdd":"/job/add/",
     "jobEdit":"/job/edit/",
     "jobListDelete":"/job/delete/",
+
+    // 职员
+    "staffList":"/staff/list/"
 }
 
 export default requestUrl

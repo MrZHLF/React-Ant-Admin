@@ -17,7 +17,7 @@ class StaffList extends Component {
             switchId:"", //切换
             // 配置项
             tableConfig:{
-                url:"jobList",
+                url:"staffList",
                 checkbox:true,
                 rowkey:"id",
                 thead:[

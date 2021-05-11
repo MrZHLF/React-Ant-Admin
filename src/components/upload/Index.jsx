@@ -21,11 +21,14 @@ class UploadComponent extends Component {
     componentDidMount() {
         // this.getUploadToken()
     }
+    componentWillUnmount() {
+        localStorage.removeItem('uploadToken')
+    }
 
     getUploadToken = () => {
         return UploadToken({
-            ak:"UAYFKdST8sQD_Zgq3KX72g66pjX0yacTLYrBOPvP",
-            sk:"FYoqvNOUUtIxTSMViEi0rXJGEouUex2lvDNI8kDN",
+            ak:"",
+            sk:"",
             buckety:"react-upload"
         }).then(response => {
             console.log(response,'response')
@@ -110,7 +113,8 @@ class UploadComponent extends Component {
     triggerChange =(changedValue) => {
         const onChange = this.props.onChange
         if (onChange) {
-            onChange({[this.state.name]: changedValue})
+            // onChange({[this.state.name]: changedValue})
+            onChange(changedValue)
         }
     }
 

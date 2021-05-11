@@ -1,14 +1,14 @@
 import React, { Component,Fragment } from 'react'
-import { message,Row,Col,Radio ,DatePicker } from 'antd'
+import { message } from 'antd'
 
 import requestUrl from "@api/requestUrl"
 import {requestData} from '@api/common'
 
-import 'moment/locale/zh-cn';
-import locale from 'antd/es/date-picker/locale/zh_CN';
+// import 'moment/locale/zh-cn';
+// import locale from 'antd/es/date-picker/locale/zh_CN';
 
 import FormCom from '@c/form/Index'
-import { Add,Detailed } from '../../api/job'
+import { Add,Detailed } from '../../api/staff'
 
 import { nation,face,education } from '@/js/data'
 import { validate_phone } from '@/utils/validate'
@@ -18,6 +18,7 @@ export default class StaffAdd extends Component {
     constructor(props) {
         super(props);
         this.state={
+            // job_status: "", //职位状态
             loading:false,
             id:this.props.location.state ? this.props.location.state.id : "",
             select:[],
@@ -175,18 +176,78 @@ export default class StaffAdd extends Component {
                     type:"Column",
                     label:"就职信息",
                 },
-                {
-                    type:"Select", 
-                    label:"职位",
-                    name:"jobListAll",
-                    required:true,
-                    style:{width:"200px"},
-                    options:[
-                        {label:"党员",value:"1"},
-                        {label:"团员",value:"2"}
-                    ],
-                    placeholder:"请输选择职位"
+                { 
+                    type: "SelectComponent",
+                    label: "部门", 
+                    url: "getDepartmentList",
+                    name: "departmen_id",
+                    propsKey: {
+                        label: "name",
+                        value: "id"
+                    },
+                    required: true,
+                    style: { width: "200px" },
+                    placeholder: "请选择部门"
                 },
+                { 
+                    type: "SelectComponent",
+                    label: "职位", 
+                    url: "jobListAll",
+                    name: "job_id",
+                    propsKey: {
+                        label: "jobName",
+                        value: "jobId"
+                    },
+                    required: true,
+                    style: { width: "200px" },
+                    placeholder: "请选择邮箱"
+                },
+                {
+                    type: "FormItemInline",
+                    label: "职员状态", 
+                    name: "name", 
+                    required: true, 
+                    style: { width: "200px" },
+                    placeholder: "请输入姓名",
+                    col_label: 2,
+                    col_control: 22,
+                    inline_item: [
+                        { 
+                            type: "Date",
+                            label: "入职时间", 
+                            name: "job_entry_date", 
+                            required: true, 
+                            style: { width: "100%" },
+                            placeholder: "请输入姓名",
+                            col: 3
+                        },
+                        { 
+                            type: "Date",
+                            label: "转正时间", 
+                            name: "job_formal_date", 
+                            required: true, 
+                            style: { width: "100%" },
+                            placeholder: "请输入姓名",
+                            col: 3
+                        },
+                        { 
+                            type: "Date",
+                            label: "离职时间", 
+                            name: "job_quit_date", 
+                            required: true, 
+                            style: { width: "100%" },
+                            placeholder: "请输入姓名",
+                            col: 3
+                        }
+                    ]
+                },
+                // {
+                //     type:"Slot", 
+                //     label:"职位状态 ",
+                //     name:"parentId",
+                //     slotName:"jobStatus",
+                //     style:{width:"200px"},
+                // },
                 {
                     type:"Input", 
                     label:"公司邮箱",
@@ -196,17 +257,21 @@ export default class StaffAdd extends Component {
                     placeholder:"请输入公司邮箱"
                 },
                 {
-                    type:"Slot", 
-                    label:"职位状态 ",
-                    name:"parentId",
-                    slotName:"jobStatus",
-                    style:{width:"200px"},
-                },
-                {
                     type:"Editor", 
-                    label:"描述",
-                    name:"content",
-                    placeholder:"请输入描述内容"
+                    label: "描述", 
+                    name: "introduce", 
+                    required: true, 
+                    placeholder: "请输入描述内容"
+                },
+                { 
+                    type: "Radio",
+                    label: "禁启用", 
+                    name: "status", 
+                    required: true,
+                    options: [
+                        { label: "禁用", value: false },
+                        { label: "启用", value: true },
+                    ]
                 }
             ]
         }
@@ -276,43 +341,40 @@ export default class StaffAdd extends Component {
     onHandleEdit = (value) => {
         const requestData = value
         requestData.id = this.state.id
-        // Edit(requestData).then(response => {
-        //     let data = response.data
-        //     message.info(data.message)
-        //     this.setState({
-        //         loading:false
-        //     })
-        // }).catch(error=>{
-        //     this.setState({
-        //         loading:false
-        //     })
-        // })
     }
+
+    // onChange = (e) => {
+    //     this.setState({
+    //         job_status:e.target.value
+    //     })
+    // }
     render() {
         
         return (
             <Fragment>
-                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} >
+                <FormCom formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit}>
                     {/* 插槽 */}
-                    <div ref="jobStatus">
-                        <Row gutter={16}>
-                            <Col span={4}>
-                                <Radio>在职</Radio>
-                                <div className="spacing-15"></div>
-                                <DatePicker locale={locale}  format="YYYY/MM/DD"/>
-                            </Col>
-                            <Col span={4}>
-                                <Radio>休假</Radio>
-                                <div className="spacing-15"></div>
-                                <DatePicker locale={locale}  format="YYYY/MM/DD"/>
-                            </Col>
-                            <Col span={4}>
-                                <Radio>离职</Radio>
-                                <div className="spacing-15"></div>
-                                <DatePicker locale={locale}  format="YYYY/MM/DD"/>
-                            </Col>
-                        </Row>
-                    </div>
+                    {/* <div ref="jobStatus">
+                        <Radio.Group onChange={this.onChange} value={this.state.job_status}>
+                            <Row gutter={16}>
+                                <Col span={8}>
+                                    <Radio value={'online'}>在职</Radio>
+                                    <div className="spacing-15"></div>
+                                    <DatePicker locale={locale}  format="YYYY/MM/DD"/>
+                                </Col>
+                                <Col span={8}>
+                                    <Radio value={'vacation'}>休假</Radio>
+                                    <div className="spacing-15"></div>
+                                    <DatePicker locale={locale}  format="YYYY/MM/DD"/>
+                                </Col>
+                                <Col span={8}>
+                                    <Radio value={'quit'}>离职</Radio>
+                                    <div className="spacing-15"></div>
+                                    <DatePicker locale={locale}  format="YYYY/MM/DD"/>
+                                </Col>
+                            </Row>
+                        </Radio.Group>
+                    </div> */}
                 </FormCom>
             </Fragment>
         )

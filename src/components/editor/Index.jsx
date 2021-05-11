@@ -20,7 +20,8 @@ class EditorComponent extends Component {
     triggerChange =(changedValue) => {
         const onChange = this.props.onChange
         if (onChange) {
-            onChange({[this.state.name]: changedValue})
+            // onChange({[this.state.name]: changedValue})
+            onChange(changedValue)
         }
     }
 
