@@ -20,7 +20,8 @@ const requestUrl = {
     "jobListDelete":"/job/delete/",
 
     // 职员
-    "staffList":"/staff/list/"
+    "staffList":"/staff/list/",
+    "staffListDelete":"/staff/delete/"
 }
 
 export default requestUrl

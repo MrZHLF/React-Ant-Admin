@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import  { Button,Switch, message } from 'antd'
-import { Status } from '@api/job'
+import { Status } from '@api/staff'
 
 import TableComponent from '@c/tableData/Index'
 
@@ -22,6 +22,11 @@ class StaffList extends Component {
                 rowkey:"id",
                 thead:[
                     {
+                        title:"姓名",
+                        dataIndex:"full_name",
+                        key:"full_name"
+                    },
+                    {
                         title:"职位名称",
                         dataIndex:"jobName",
                         key:"jobName"
@@ -30,6 +35,11 @@ class StaffList extends Component {
                         title:"部门名称",
                         dataIndex:"name",
                         key:"name"
+                    },
+                    {
+                        title:"入职日期",
+                        dataIndex:"job_entry_date",
+                        key:"job_entry_date"
                     },
                     {
                         title:"禁启用",
@@ -48,9 +58,9 @@ class StaffList extends Component {
                             return (
                                 <div className="inline-button">
                                     <Button type="primary">
-                                        <Link to={{pathname:'/index/job/add',state:{id:rowData.jobId}}}>编辑</Link>
+                                        <Link to={{pathname:'/index/staff/add',state:{id:rowData.staff_id}}}>编辑</Link>
                                     </Button>
-                                    <Button onClick={()=>this.delete(rowData.jobId)}>删除</Button>
+                                    <Button onClick={()=>this.delete(rowData.staff_id)}>删除</Button>
                                 </div>
                             )
                         }
@@ -84,10 +94,10 @@ class StaffList extends Component {
     onHandlerSwitch(data) {
         // 禁启用
         const requestData = {
-            id:data.jobId,
+            id:data.staff_id,
             status: !data.status
         }
-        this.setState({switchId:data.jobId})
+        this.setState({switchId:data.staff_id})
         Status(requestData).then(response => {
             message.info(response.data.message)
             this.setState({switchId:""})

@@ -24,11 +24,20 @@ class UploadComponent extends Component {
     componentWillUnmount() {
         localStorage.removeItem('uploadToken')
     }
-
+    static getDerivedStateFromProps(nextProps,prevState) {
+        let { value } = nextProps
+        if (!value) { return false }
+        if(value != prevState.value) {
+            return {
+                imageUrl:value
+            }
+        }
+        return null
+    }
     getUploadToken = () => {
         return UploadToken({
-            ak:"",
-            sk:"",
+            ak:"UAYFKdST8sQD_Zgq3KX72g66pjX0yacTLYrBOPvP",
+            sk:"FYoqvNOUUtIxTSMViEi0rXJGEouUex2lvDNI8kDN",
             buckety:"react-upload"
         }).then(response => {
             console.log(response,'response')

@@ -4,15 +4,15 @@ import { message } from 'antd'
 import requestUrl from "@api/requestUrl"
 import {requestData} from '@api/common'
 
-// import 'moment/locale/zh-cn';
-// import locale from 'antd/es/date-picker/locale/zh_CN';
 
 import FormCom from '@c/form/Index'
-import { Add,Detailed } from '../../api/staff'
+import { Add,Detailed,Edit } from '../../api/staff'
 
 import { nation,face,education } from '@/js/data'
 import { validate_phone } from '@/utils/validate'
 
+// 日期转化
+import moment from 'moment'
 
 export default class StaffAdd extends Component {
     constructor(props) {
@@ -291,12 +291,21 @@ export default class StaffAdd extends Component {
         // 获取表单详情
         if(!this.props.location.state) {return false}
         Detailed({id:this.state.id}).then(response => {
+
+            const data = response.data.data
+            // 日期处理
+            const basisDate = {
+                birthday: data.birthday ? moment(data.birthday) : null,
+                job_entry_date:data.job_entry_date ? moment(data.job_entry_date) : null,
+                job_formal_date:data.job_formal_date ? moment(data.job_formal_date) : null,
+                job_quit_date:data.job_quit_date ? moment(data.job_quit_date) : null
+            }
             this.setState({
                 formConfig:{
                     ...this.state.formConfig,
-                    setFieldValue: response.data.data,
-                    url: "jobEdit",
-                    editKey:"jobId"
+                    setFieldValue: {...data,...basisDate},
+                    url: "staffEdit",
+                    editKey:"staff_id"
                 }
             })
             // this.refs.form.setFieldsValue(response.data.data)
@@ -341,6 +350,23 @@ export default class StaffAdd extends Component {
     onHandleEdit = (value) => {
         const requestData = value
         requestData.id = this.state.id
+
+        requestData.birthday = new Date(requestData.birthday)
+        requestData.job_entry_date = new Date(requestData.job_entry_date)
+        requestData.job_formal_date = new Date(requestData.job_formal_date)
+        requestData.job_quit_date = new Date(requestData.job_quit_date)
+
+        Edit(requestData).then(response => {
+            const data = response.data
+            message.info(data.message)
+            this.setState({
+                loading:false
+            })
+        }).catch(error => {
+            this.setState({
+                loading:false
+            })
+        })
     }
 
     // onChange = (e) => {

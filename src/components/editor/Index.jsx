@@ -6,7 +6,7 @@ class EditorComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            
+            value:""
         }
     }
 
@@ -14,6 +14,17 @@ class EditorComponent extends Component {
 
     handleEditorChange = (value) => {
         this.triggerChange(value)
+    }
+
+    static getDerivedStateFromProps(nextProps,prevState) {
+        let { value } = nextProps
+        if (!value) { return false }
+        if(value != prevState.value) {
+            return {
+                value:value
+            }
+        }
+        return null
     }
 
     // 返回数据
@@ -58,7 +69,7 @@ class EditorComponent extends Component {
                 inline={false}
                 selector="editorStateRef"
                 apiKey=""
-                initialValue={"这个人很懒，什么都没有留下"}
+                initialValue={this.state.value}
                 init={{...editorObj}} //初始化配置
                 onEditorChange={this.handleEditorChange}
             >

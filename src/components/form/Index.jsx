@@ -138,7 +138,7 @@ class FormCom extends Component {
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorComponents}]}>
-                <UploadComponent name={item.name} request={item.request}></UploadComponent>
+                <UploadComponent name={item.name} request={item.request} initValue={this.props.formConfig.setFieldValue}></UploadComponent>
             </Form.Item>
         )
     }
@@ -148,7 +148,7 @@ class FormCom extends Component {
         const rules =  this.rules(item)
         return (
             <Form.Item label={item.label} name={item.name} key={item.name} rules={[...rules,{validator:this.validatorSelect}]}>
-                <EditorComponent name={item.name}></EditorComponent>
+                <EditorComponent name={item.name} initValue={this.props.formConfig.setFieldValue}></EditorComponent>
             </Form.Item>
         )
     }
