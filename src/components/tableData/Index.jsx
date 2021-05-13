@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 
 
-import  {Form, Input, Button,message,Modal  } from 'antd'
+import  {message,Modal,Row,Col  } from 'antd'
 import { TableList,TableDelete } from '@api/common'
 import requestUrl from "@api/requestUrl"
 
@@ -148,13 +148,21 @@ class TableComponent extends Component {
     }
 
     render() {
-        const { thead, checkbox,rowkey,formItem } = this.props.config
+        const { thead, checkbox,rowkey,formItem,formSearchCol,formRightCol } = this.props.config
         const rowSelection = {
             onChange: this.onCheckebox
         }
         return (
             <Fragment>
-                <FormSearch formItem={formItem} search={this.search} />
+                <Row>
+                    <Col span={formSearchCol || 20}><FormSearch formItem={formItem} search={this.search} /></Col>
+                    <Col span={formRightCol || 4}>
+                        <div className="pull-right">
+                            {this.props.children}
+                        </div>
+                    </Col>
+                </Row>
+                
                 <div className="table-wrap">
                     <TableBasis 
                         columns={thead} 

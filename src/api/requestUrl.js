@@ -21,7 +21,10 @@ const requestUrl = {
 
     // 职员
     "staffList":"/staff/list/",
-    "staffListDelete":"/staff/delete/"
+    "staffListDelete":"/staff/delete/",
+
+    // 用户
+    "userList":"/user/list/",
 }
 
 export default requestUrl

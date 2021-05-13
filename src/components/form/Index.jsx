@@ -285,6 +285,7 @@ class FormCom extends Component {
         })
     }
     render() {
+        const { submitButton } = this.props
         return (
             <Form 
                 ref="form"
@@ -293,9 +294,13 @@ class FormCom extends Component {
                 initialValues={this.props.formConfig.initValue}
             >
                 {this.initFormItem()}
-                <Form.Item>
+
+                {
+                    submitButton ? <Form.Item>
                     <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button>
-                </Form.Item>
+                </Form.Item> : ""
+                }
+                
             </Form>
         )
     }
@@ -304,10 +309,12 @@ class FormCom extends Component {
 
 // 类型检测
 FormCom.propTypes = {
-    formConfig: PropTypes.object
+    formConfig: PropTypes.object,
+    submitButton:PropTypes.bool
 }
 // 默认值
 FormCom.defaultProps = {
     formConfig: {},
+    submitButton:true
 }
 export default FormCom
