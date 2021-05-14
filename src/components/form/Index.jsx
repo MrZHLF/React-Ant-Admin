@@ -31,10 +31,17 @@ class FormCom extends Component {
             },
             loading:false
         }
+
+        this.form = React.createRef()
     }
 
     componentWillReceiveProps({formConfig}) {
-        this.refs.form.setFieldsValue(formConfig.setFieldValue)
+        this.form.current.setFieldsValue(formConfig.setFieldValue)
+    }
+
+    componentDidMount() {
+        // 获取父组件
+        this.props.onRef && this.props.onRef(this)
     }
 
     rules = (item) => {
@@ -277,30 +284,38 @@ class FormCom extends Component {
             this.setState({
                 loading:false
             })
-            // this.refs.form.resetFields()
+            // 清除表单
+            this.onReset()
         }).catch(error => {
             this.setState({
                 loading:false
             })
         })
     }
+    onReset = () => {
+        // 清空表单
+        this.form.current.resetFields()
+    }
+
     render() {
-        const { submitButton } = this.props
+        const { submitButton,formLayout } = this.props
         return (
             <Form 
-                ref="form"
+                ref={this.form}
                 {...this.props.formLayout}
                 onFinish={this.onSubmit}
                 initialValues={this.props.formConfig.initValue}
             >
                 {this.initFormItem()}
 
-                {
-                    submitButton ? <Form.Item>
-                    <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button>
-                </Form.Item> : ""
-                }
-                
+                <Row>
+                    <Col span={formLayout.labelCol.span}></Col>
+                    <Col span={formLayout.wrapperCol.span}>
+                        {
+                            submitButton ? <Button loading={this.state.loading} type="primary" htmlType="submit">添加</Button> : ""
+                        }
+                    </Col>
+                </Row>
             </Form>
         )
     }
