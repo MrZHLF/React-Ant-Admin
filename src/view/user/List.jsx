@@ -1,5 +1,4 @@
 import React, { Component,Fragment } from 'react'
-import { Link } from 'react-router-dom'
 import  { Button,Switch, message } from 'antd'
 import { Status } from '@api/staff'
 
@@ -45,6 +44,11 @@ class UserList extends Component {
                         }
                     },
                     {
+                        title:"权限",
+                        dataIndex:"role_str",
+                        key:"role_str"
+                    },
+                    {
                         title:"操作",
                         dataIndex:"opeartion",
                         key:"opeartion",
@@ -52,10 +56,10 @@ class UserList extends Component {
                         render:(text,rowData)=> {
                             return (
                                 <div className="inline-button">
-                                    <Button type="primary">
-                                        <Link to={{pathname:'/index/staff/add',state:{id:rowData.staff_id}}}>编辑</Link>
+                                    <Button type="primary" onClick={() => this.userModal({status: true,user_id:rowData.id})}>
+                                    编辑
                                     </Button>
-                                    <Button onClick={()=>this.delete(rowData.staff_id)}>删除</Button>
+                                    <Button onClick={()=>this.delete(rowData.id)}>删除</Button>
                                 </div>
                             )
                         }
@@ -94,22 +98,31 @@ class UserList extends Component {
         this.child = ref
     }
     // 显示弹框
-    userModal = () => {
-        this.child.visibleModal(true)
+    userModal = (data) => {
+        console.log(data,'datadata')
+        this.child.visibleModal(data)
     }
 
     onHandlerSwitch(data) {
         // 禁启用
         const requestData = {
-            id:data.staff_id,
+            id:data.id,
             status: !data.status
         }
-        this.setState({switchId:data.staff_id})
+        this.setState({switchId:data.id})
         Status(requestData).then(response => {
             message.info(response.data.message)
             this.setState({switchId:""})
         }).catch(error => {
             this.setState({switchId:""})
+        })
+    }
+    // 编辑 第一种通过绑定另外一个点击事件
+    onHandlerEdit  = (id) => {
+        console.log(id,'666')
+        this.userModal({
+            status: true,
+            user_id:id
         })
     }
     delete = (id) => {
@@ -119,7 +132,7 @@ class UserList extends Component {
         return (
             <Fragment>
                 <TableComponent onRef={this.getChildRef} batchButton={true} config={this.state.tableConfig}>
-                    <Button type="primary" ref="userAdd" onClick={this.userModal}>新增</Button>
+                    <Button type="primary" ref="userAdd" onClick={()=>this.userModal({status:true})}>新增</Button>
                 </TableComponent>
                 <UserModal onRef={this.getUserModalRef}/>
             </Fragment>
