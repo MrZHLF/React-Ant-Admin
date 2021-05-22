@@ -40,18 +40,15 @@ class TableComponent extends Component {
                 pageSize
             }
         }
-        console.log(searchData,'searchData')
         // 搜索参数
         if(Object.keys(searchData).length != 0)  {
             for (let key in searchData) {
                 requestData.data[key] = searchData[key]
             }
         }
-        console.log(requestData.data,'requestData.data')
         this.setState({loadingTable:true})
         TableList(requestData).then(response => {
             const responseData = response.data.data
-            console.log(responseData)
             if(responseData.data) {
                 this.setState({
                     data:responseData.data,

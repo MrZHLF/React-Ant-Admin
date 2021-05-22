@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { UserAdd,UserDetailed } from '@/api/user'
+import { UserAdd,UserDetailed,UserEdit } from '@/api/user'
 import { Modal,message } from 'antd';
 import FormCom from '@c/form/Index'
 import { validate_phone,validate_pass } from '@/utils/validate'
@@ -9,12 +9,17 @@ var CryptoJS = require("crypto-js");
 class UserModal extends Component {
     constructor(props) {
         super(props)
+        const _this = this
         this.state = {
             isModalVisible:false,
             user_id:"",
             password_rules:[ //自定义校验
-                ()=>({
+                ({getFieldValue})=>({
                     validator(rule,value) {
+                        // 编辑状态
+                        if (_this.state.user_id && !value && !getFieldValue('passwords')) {
+                            return Promise.resolve()
+                        }
                         if (validate_pass(value)) {
                             return Promise.resolve()
                         } else {
@@ -26,6 +31,9 @@ class UserModal extends Component {
             passwords_rules:[ //自定义校验
                 ({getFieldValue})=>({
                     validator(rule,value) {
+                        if (_this.state.user_id && !value && !getFieldValue('password')) {
+                            return Promise.resolve()
+                        }
                         if (!value || getFieldValue('password') !== value) {
                             return Promise.reject('两次密码不相同')
                         }
@@ -63,21 +71,22 @@ class UserModal extends Component {
                     value_type:"password", 
                     label:"密码",
                     name:"password",
+                    trigger:['onBlur'],
                     upload_field:true,
-                    required:false,
                     style:{
                         width:"200px"
                     },
                     placeholder:"请输入密码",
-                    rules:""
+                    rules:"",
+                    blurEvent:true
                 },
                 {
                     type:"Input", 
                     value_type:"password", 
                     label:"确认密码",
+                    trigger:['onBlur'],
                     name:"passwords",
                     upload_field:true,
-                    required:false,
                     style:{
                         width:"200px"
                     },
@@ -144,11 +153,9 @@ class UserModal extends Component {
             [1,2],
             {
                 1:{
-                    required: id ? false : true,
                     rules:  id ? "" : this.state.password_rules
                 },
                 2:{
-                    required: id ? false : true,
                     rules: id ? "" : this.state.passwords_rules
                 }
             }
@@ -181,19 +188,63 @@ class UserModal extends Component {
     handleOk = () => {
         this.child.onSubmit()
     }
+
+    onBlurEvent = (e) => {
+        console.log(e,'2')
+        const value = e.currentTarget.value
+        if(value) {
+            this.updateItem(value ? false : true)
+            return false
+        }
+        
+        if (e.currentTarget.id === 'password' && this.state.user_id) {
+            this.updateArrayItem(
+                [1],
+                { 1:{ rules:  "" } }
+            );
+        }
+
+        if (e.currentTarget.id === 'passwords' && this.state.user_id) {
+            this.updateArrayItem(
+                [2],
+                {2:{ rules: ""}}
+            );
+        }
+    }
+
     handleCancel = () => {
          // 清除
         this.child.onReset()
         this.visibleModal(false)
     }
     submit = (value) => {
+        this.state.user_id ? this.handlerFormEdit(value) : this.handlerFormAdd(value)
+        
+    }
+
+    handlerFormAdd = (value) => {
         let requestData = {
             ...value,
             password:CryptoJS.MD5(value.password).toString()
         }
         delete requestData.passwords
         UserAdd(requestData).then(response => {
-            console.log(response,'response')
+            const data = response.data
+            message.info(data.message)
+
+            // 关闭弹窗
+            this.handleCancel(false)
+        })
+    }
+    
+    handlerFormEdit = (value) => {
+        let requestData = value
+        requestData.id = this.state.user_id
+        if (requestData.password) {
+            requestData.password = CryptoJS.MD5(value.password).toString()
+        }
+        delete requestData.passwords
+        UserEdit(requestData).then(response => {
             const data = response.data
             message.info(data.message)
 
@@ -202,11 +253,10 @@ class UserModal extends Component {
         })
     }
 
-    
     render() {
         return (
             <Modal title="新增用户" visible={this.state.isModalVisible} footer={null} onCancel={this.handleCancel}>
-                <FormCom onRef={this.onFormRef} formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit} submit={this.submit} />
+                <FormCom onRef={this.onFormRef} onBlur={this.onBlurEvent} formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit} submit={this.submit} />
             </Modal>
         )
     }

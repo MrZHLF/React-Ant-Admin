@@ -1,6 +1,6 @@
 import React, { Component,Fragment } from 'react'
 import  { Button,Switch, message } from 'antd'
-import { Status } from '@api/staff'
+import { Status } from '@api/user'
 
 import TableComponent from '@c/tableData/Index'
 import UserModal from './components/UserModal'

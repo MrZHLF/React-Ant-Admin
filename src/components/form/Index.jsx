@@ -65,12 +65,19 @@ class FormCom extends Component {
         return Promise.reject("")
     }
 
+
+    // 失去焦点
+    blurEvent = (e)=> {
+        console.log(e)
+        this.props.onBlur && this.props.onBlur(e)
+    }
+
     // 处理input
     inputElem = (item) => {
         const rules =  this.rules(item)
         return (
-            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules} shouldUpdate={item.upload_field || false}>
-                <Input type={item.value_type || "text"} style={item.style} placeholder={item.placeholder}/>
+            <Form.Item label={item.label} name={item.name} key={item.name} rules={rules}  validateTrigger={item.trigger || ['onChange']} shouldUpdate={item.upload_field || false}>
+                <Input type={item.value_type || "text"} style={item.style} onBlur={item.blurEvent && this.blurEvent} placeholder={item.placeholder}/>
             </Form.Item>
         )
     }
