@@ -78,7 +78,6 @@ class UserModal extends Component {
                     },
                     placeholder:"请输入密码",
                     rules:"",
-                    blurEvent:true
                 },
                 {
                     type:"Input", 
@@ -196,20 +195,6 @@ class UserModal extends Component {
             this.updateItem(value ? false : true)
             return false
         }
-        
-        if (e.currentTarget.id === 'password' && this.state.user_id) {
-            this.updateArrayItem(
-                [1],
-                { 1:{ rules:  "" } }
-            );
-        }
-
-        if (e.currentTarget.id === 'passwords' && this.state.user_id) {
-            this.updateArrayItem(
-                [2],
-                {2:{ rules: ""}}
-            );
-        }
     }
 
     handleCancel = () => {
@@ -238,12 +223,28 @@ class UserModal extends Component {
     }
     
     handlerFormEdit = (value) => {
+        const password = value.password
+        const passwords = value.passwords
+        console.log(value,'value')
+        if (password || passwords) {
+            if (!validate_pass(password) || !validate_pass(passwords)) {
+                message.error('请输入6-20位的英文加数字')
+                return false
+            }
+        }
+
+        if (passwords && passwords) {
+            if(passwords !== passwords) {
+                message.error('两次密码不一样')
+                return
+            }
+        }
         let requestData = value
         requestData.id = this.state.user_id
         if (requestData.password) {
             requestData.password = CryptoJS.MD5(value.password).toString()
+            delete requestData.passwords
         }
-        delete requestData.passwords
         UserEdit(requestData).then(response => {
             const data = response.data
             message.info(data.message)
