@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { UserAdd,UserDetailed,UserEdit } from '@/api/user'
-import { Modal,message } from 'antd';
+import { Modal,message,Checkbox } from 'antd';
 import FormCom from '@c/form/Index'
 import { validate_phone,validate_pass } from '@/utils/validate'
-
+import {GetRoles }  from '@api/permission'
 // 加密
 var CryptoJS = require("crypto-js");
 class UserModal extends Component {
@@ -13,6 +13,8 @@ class UserModal extends Component {
         this.state = {
             isModalVisible:false,
             user_id:"",
+            role_options:[], //角色权限
+            role_value:[],
             password_rules:[ //自定义校验
                 ({getFieldValue})=>({
                     validator(rule,value) {
@@ -128,6 +130,12 @@ class UserModal extends Component {
                         { label: "禁用", value: false },
                         { label: "启用", value: true },
                     ]
+                },
+                {
+                    type:"Slot",
+                    label:"权限",
+                    name:"role",
+                    slotName:"roole"
                 }
             ]
         }
@@ -169,18 +177,35 @@ class UserModal extends Component {
             user_id: params.user_id
         },() => {
             // 异步调用
-            this.getDetailed()
-            this.updateItem(params.user_id)
+            if (params.user_id) {
+                this.getDetailed()
+                this.updateItem(params.user_id)
+            }
+            
+        })
+
+        this.getRoles()
+    }
+    // 获取角色
+    getRoles  = () => {
+        GetRoles().then(response => {
+            this.setState({
+                role_options:response.data.data
+            })
         })
     }
 
+    // 获取详情
     getDetailed = () => {
         if (!this.state.user_id) { return false }
         UserDetailed({id:this.state.user_id}).then(response => {
+            console.log(response,'response')
+            let data = response.data.data
             this.setState({
                 formConfig:{
-                    setFieldValue:response.data.data
-                }
+                    setFieldValue:data
+                },
+                role_value: data.role ? data.role.split(",") : []
             })
         })
     }
@@ -189,7 +214,6 @@ class UserModal extends Component {
     }
 
     onBlurEvent = (e) => {
-        console.log(e,'2')
         const value = e.currentTarget.value
         if(value) {
             this.updateItem(value ? false : true)
@@ -241,6 +265,10 @@ class UserModal extends Component {
         }
         let requestData = value
         requestData.id = this.state.user_id
+
+        // 权限
+        requestData.role = this.state.role_value.join();
+
         if (requestData.password) {
             requestData.password = CryptoJS.MD5(value.password).toString()
             delete requestData.passwords
@@ -254,10 +282,24 @@ class UserModal extends Component {
         })
     }
 
+    onChangeRole= (value) => {
+        this.setState({
+            role_value:value
+        })
+    }
+
     render() {
         return (
             <Modal title="新增用户" visible={this.state.isModalVisible} footer={null} onCancel={this.handleCancel}>
-                <FormCom onRef={this.onFormRef} onBlur={this.onBlurEvent} formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit} submit={this.submit} />
+                <FormCom onRef={this.onFormRef} onBlur={this.onBlurEvent} formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit} submit={this.submit}>
+                    <div ref="roole">
+                        <Checkbox.Group
+                            options={this.state.role_options}
+                            value={this.state.role_value}
+                            onChange={this.onChangeRole}
+                        />
+                    </div>
+                </FormCom>
             </Modal>
         )
     }

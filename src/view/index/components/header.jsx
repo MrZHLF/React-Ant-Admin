@@ -25,7 +25,6 @@ class Header extends Component {
     // 退出
     logout = () => {
         // 调用action
-        console.log(66)
         this.props.actions.logout()
         this.props.history.push('/')
     }
@@ -54,7 +53,6 @@ class Header extends Component {
 
 // 获取state状态数据
 const mapStateToProps = (state) => {
-    console.log(state.app,'mapStateToProps')
     return {
         userName: state.app.username
     }

@@ -119,7 +119,6 @@ class UserList extends Component {
     }
     // 编辑 第一种通过绑定另外一个点击事件
     onHandlerEdit  = (id) => {
-        console.log(id,'666')
         this.userModal({
             status: true,
             user_id:id

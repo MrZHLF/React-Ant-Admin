@@ -63,6 +63,7 @@ const Router = [{
         title: '职员管理',
         icon: 'edit',
         key: '/index/staff',
+        role: ["user"],
         child: [{
                 key: '/index/staff/list',
                 title: '职员列表',
@@ -78,11 +79,13 @@ const Router = [{
     {
         title: '请假',
         icon: 'info-circle-o',
+        role: ["user"],
         key: '/home/about'
     },
     {
         title: '加班',
         icon: 'info-circle-o',
+        role: ["user"],
         key: '/home/abouta'
     }
 ]

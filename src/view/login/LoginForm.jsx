@@ -5,12 +5,11 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { setTokenAction,setUsernameAction} from '@/store/action/App'
 
-import { Form, Input, Button, Row, Col, message } from 'antd';
+import { Form, Input, Button, Row, Col } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 
-// import { setToken,setUsername } from './../../utils/cookies'
 // 验证
-import { validate_password,validate_email } from './../../utils/validate'
+import { validate_password } from './../../utils/validate'
 
 import { Login } from './../../api/account'
 
@@ -44,16 +43,15 @@ class LoginForm extends Component {
             loading:true
         })
         Login(requestData).then(res => {
-            console.log(res)
             this.setState({
                 loading:false
             })
             const data = res.data.data
-            console.log(data,'3333')
             // action
             this.props.actions.setToken(data.token)
             this.props.actions.setUsername(data.username)
-            
+            sessionStorage.setItem('role',data.role)
+
             this.props.history.push('/index')
         }).catch(error => {
             this.setState({
