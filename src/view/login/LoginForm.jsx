@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { setTokenAction,setUsernameAction} from '@/store/action/App'
+import { setTokenAction,setUsernameAction,accountLoginAction} from '@/store/action/App'
 
 import { Form, Input, Button, Row, Col } from 'antd';
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
@@ -42,22 +42,25 @@ class LoginForm extends Component {
         this.setState({
             loading:true
         })
-        Login(requestData).then(res => {
-            this.setState({
-                loading:false
-            })
-            const data = res.data.data
-            // action
-            this.props.actions.setToken(data.token)
-            this.props.actions.setUsername(data.username)
-            sessionStorage.setItem('role',data.role)
-
+        this.props.actions.handleLogin(requestData).then(res => {
             this.props.history.push('/index')
-        }).catch(error => {
-            this.setState({
-                loading:false
-            })
         })
+        // Login(requestData).then(res => {
+        //     this.setState({
+        //         loading:false
+        //     })
+        //     const data = res.data.data
+        //     // action
+        //     this.props.actions.setToken(data.token)
+        //     this.props.actions.setUsername(data.username)
+        //     sessionStorage.setItem('role',data.role)
+
+        //     this.props.history.push('/index')
+        // }).catch(error => {
+        //     this.setState({
+        //         loading:false
+        //     })
+        // })
 	};
     // 获取input中value
     inputChangeUserName = (e) => {
@@ -146,7 +149,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             setToken:setTokenAction,
-            setUsername:setUsernameAction
+            setUsername:setUsernameAction,
+            handleLogin:accountLoginAction
         },dispatch)
     }
 }

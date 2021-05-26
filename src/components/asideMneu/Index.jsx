@@ -1,7 +1,7 @@
 import React, { Component,Fragment } from 'react'
 import {Link,withRouter} from 'react-router-dom'
-import Router from './../../router/index'
-
+// import Router from './../../router/index'
+import { connect } from 'react-redux'
 import {  Menu } from 'antd';
 const { SubMenu } = Menu;
 
@@ -14,36 +14,41 @@ class AsideMenu extends Component {
             openKeys:[]
         }
     }
-    // 组件挂载完成之前
-    UNSAFE_componentWillMount() {
-        const role = sessionStorage.getItem('role').split(',')
-        // 存储路由
-        let routersArray = [];
-        routersArray = Router.filter((item) => {
-            // 第一层
-            if (this.hasPermission(role,item)) {
-                if (item.child && item.child.length > 0) {
-                    item.child.filter(child => {
-                        if(this.hasPermission(role,child)) {
-                            return child
-                        }
-                    })
-                    return item
-                }
-                return item
-            }
-        })
-        console.log(routersArray,'routersArray')
-        this.setState({
-            router: routersArray
-        })
-    }
+    // // 组件挂载完成之前
+    // UNSAFE_componentWillMount() {
+    //     const role = sessionStorage.getItem('role').split(',')
+    //     // 存储路由
+    //     let routersArray = [];
+    //     if(role.includes("admin")) {
+    //         routersArray = Router
+    //     } else {
+    //         routersArray = Router.filter((item) => {
+    //             // 第一层
+    //             if (this.hasPermission(role,item)) {
+    //                 if (item.child && item.child.length > 0) {
+    //                     item.child.filter(child => {
+    //                         if(this.hasPermission(role,child)) {
+    //                             return child
+    //                         }
+    //                     })
+    //                     return item
+    //                 }
+    //                 return item
+    //             }
+    //         })
+    //     }
+        
+    //     console.log(routersArray,'routersArray')
+    //     this.setState({
+    //         router: routersArray
+    //     })
+    // }
 
-    hasPermission = (role,router) => {
-        if (router.role && router.role.length > 0) {
-            return role.some(elem => router.role.indexOf(elem) >= 0)
-        }
-    }
+    // hasPermission = (role,router) => {
+    //     if (router.role && router.role.length > 0) {
+    //         return role.some(elem => router.role.indexOf(elem) >= 0)
+    //     }
+    // }
 
     componentDidMount(){
         // 菜单状态
@@ -106,7 +111,8 @@ class AsideMenu extends Component {
         
     }
     render() {
-        const { selectedKeys,openKeys,router } = this.state
+        const { selectedKeys,openKeys } = this.state
+        const { routers} = this.props
         return (
             <Fragment>
                 <Menu
@@ -119,7 +125,7 @@ class AsideMenu extends Component {
                     style={{ height: '100%', borderRight: 0 }}
                     >
                     {
-                        router && router.map(firstItem => {
+                        routers && routers.map(firstItem => {
                             return firstItem.child && firstItem.child.length > 0 ? this.renderSubMnenu(firstItem) : this.renderMenu(firstItem)
                         }) 
                     }
@@ -129,4 +135,13 @@ class AsideMenu extends Component {
         )
     }
 }
-export default withRouter(AsideMenu)
+
+
+const mapStateToProps = (state) => ({
+    routers: state.app.routers
+})
+
+export default connect(
+    mapStateToProps,
+    null
+)(withRouter(AsideMenu))

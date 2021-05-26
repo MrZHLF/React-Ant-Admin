@@ -1,11 +1,13 @@
-import {setTokenKey,setUsernameKey, logout} from '../Type'
+import {setTokenKey,setUsernameKey, logout,router} from '../Type'
 import { setToken,setUsername,removeToken,removeUsername } from '@/utils/cookies'
-
+import { Login } from '@api/account'
+import Router from './../../router/index'
 export function setTokenAction(data) {
     setToken(data) //token存储
     return {
         type:setTokenKey,
-        value: data
+        value: data,
+        routers:[]
     }
 }
 
@@ -26,4 +28,52 @@ export function logoutAction() {
         type: logout,
         value:""
     }
+}
+
+export function updateRouter(data) {
+    return {
+        type:router,
+        value:data
+    }
+}
+
+export const hasPermission = (role,router) => {
+    if (router.role && router.role.length > 0) {
+        return role.some(elem => router.role.indexOf(elem) >= 0)
+    }
+}
+
+// 登录逻辑
+export const accountLoginAction = (data) => dispatch => {
+    return Login(data).then(response => {
+        const data = response.data.data
+        // 角色
+        const role = data.role.split(",")
+        // 存储路由
+        let routersArray = [];
+        if(role.includes("admin")) {
+            routersArray = Router
+        } else {
+            routersArray = Router.filter((item) => {
+                // 第一层
+                if (hasPermission(role,item)) {
+                    if (item.child && item.child.length > 0) {
+                        item.child.filter(child => {
+                            if(this.hasPermission(role,child)) {
+                                return child
+                            }
+                        })
+                        return item
+                    }
+                    return item
+                }
+            })
+        }
+        console.log(routersArray,'login')
+        dispatch(updateRouter(routersArray))
+        dispatch(setTokenAction(data.token))
+        dispatch(setUsernameAction(data.username))
+    }).catch(error => {
+        console.log(error)
+    })
 }
