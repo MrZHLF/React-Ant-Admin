@@ -11,7 +11,7 @@ import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 // 验证
 import { validate_password } from './../../utils/validate'
 
-import { Login } from './../../api/account'
+// import { Login } from './../../api/account'
 
 // 组件
 import Code from './../../components/code/index'

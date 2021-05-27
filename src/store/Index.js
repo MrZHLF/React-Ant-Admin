@@ -3,6 +3,7 @@ import { createStore,combineReducers,applyMiddleware,compose } from 'redux';
 // redux-thunk
 import thunk from 'redux-thunk'
 
+// import thunkPromise from 'redux-promise'
 import config from './reducer/Config'
 import department from './reducer/Department'
 import app from './reducer/App'

@@ -1,7 +1,9 @@
 import React, { Component,Fragment } from 'react'
 import {Link,withRouter} from 'react-router-dom'
-// import Router from './../../router/index'
+import { bindActionCreators } from 'redux'
+
 import { connect } from 'react-redux'
+import { getUserRoleAction} from '@/store/action/App'
 import {  Menu } from 'antd';
 const { SubMenu } = Menu;
 
@@ -14,6 +16,8 @@ class AsideMenu extends Component {
             openKeys:[]
         }
     }
+
+
     // // 组件挂载完成之前
     // UNSAFE_componentWillMount() {
     //     const role = sessionStorage.getItem('role').split(',')
@@ -49,6 +53,10 @@ class AsideMenu extends Component {
     //         return role.some(elem => router.role.indexOf(elem) >= 0)
     //     }
     // }
+
+    UNSAFE_componentWillMount() {
+        this.props.actions.headleUserRole()
+    }
 
     componentDidMount(){
         // 菜单状态
@@ -141,7 +149,15 @@ const mapStateToProps = (state) => ({
     routers: state.app.routers
 })
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions:bindActionCreators({
+            headleUserRole:getUserRoleAction
+        },dispatch)
+    }
+}
+
 export default connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
 )(withRouter(AsideMenu))

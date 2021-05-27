@@ -1,6 +1,7 @@
 import {setTokenKey,setUsernameKey, logout,router} from '../Type'
 import { setToken,setUsername,removeToken,removeUsername } from '@/utils/cookies'
 import { Login } from '@api/account'
+import { getUserRole } from '@api/user'
 import Router from './../../router/index'
 export function setTokenAction(data) {
     setToken(data) //token存储
@@ -47,6 +48,18 @@ export const hasPermission = (role,router) => {
 export const accountLoginAction = (data) => dispatch => {
     return Login(data).then(response => {
         const data = response.data.data
+        dispatch(setTokenAction(data.token))
+        dispatch(setUsernameAction(data.username))
+    }).catch(error => {
+        console.log(error)
+    })
+}
+
+
+// 获取用户角色
+export const getUserRoleAction = () => dispatch => {
+    return getUserRole().then(response => {
+        const data = response.data.data
         // 角色
         const role = data.role.split(",")
         // 存储路由
@@ -69,10 +82,7 @@ export const accountLoginAction = (data) => dispatch => {
                 }
             })
         }
-        console.log(routersArray,'login')
         dispatch(updateRouter(routersArray))
-        dispatch(setTokenAction(data.token))
-        dispatch(setUsernameAction(data.username))
     }).catch(error => {
         console.log(error)
     })
