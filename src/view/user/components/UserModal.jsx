@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { UserAdd,UserDetailed,UserEdit } from '@/api/user'
 import { Modal,message,Checkbox } from 'antd';
 import FormCom from '@c/form/Index'
+
+
+import CheckboxAll from '@c/checkboxAll/Index'
 import { validate_phone,validate_pass } from '@/utils/validate'
 import {GetRoles }  from '@api/permission'
 // 加密
@@ -15,6 +18,36 @@ class UserModal extends Component {
             user_id:"",
             role_options:[], //角色权限
             role_value:[],
+            role_menu:[
+                {
+                    label:"用户管理",
+                    value:"/user",
+                    child_item:[
+                        {
+                            label:"用户列表",
+                            value:"/user/list", 
+                        },
+                        {
+                            label:"用户添加",
+                            value:"/user/add", 
+                        }
+                    ]
+                },
+                {
+                    label:"部门管理",
+                    value:"/department",
+                    child_item:[
+                        {
+                            label:"部门列表",
+                            value:"/department/list", 
+                        },
+                        {
+                            label:"部门添加",
+                            value:"/department/add", 
+                        }
+                    ]
+                }
+            ],
             password_rules:[ //自定义校验
                 ({getFieldValue})=>({
                     validator(rule,value) {
@@ -135,7 +168,13 @@ class UserModal extends Component {
                     type:"Slot",
                     label:"权限",
                     name:"role",
-                    slotName:"roole"
+                    slotName:"role"
+                },
+                {
+                    type:"Slot",
+                    label:"菜单权限",
+                    name:"role",
+                    slotName:"role_menu"
                 }
             ]
         }
@@ -292,12 +331,20 @@ class UserModal extends Component {
         return (
             <Modal title="新增用户" visible={this.state.isModalVisible} footer={null} onCancel={this.handleCancel}>
                 <FormCom onRef={this.onFormRef} onBlur={this.onBlurEvent} formConfig={this.state.formConfig} formLayout={this.state.formLayout} formItem={this.state.formItem} submit={this.onSubmit} submit={this.submit}>
-                    <div ref="roole">
+                    <div ref="role">
                         <Checkbox.Group
                             options={this.state.role_options}
                             value={this.state.role_value}
                             onChange={this.onChangeRole}
                         />
+                    </div>
+                    <div ref="role_menu">
+                        {
+                            this.state.role_menu.map((item,index)=> {
+                                return <CheckboxAll data={item} key={index} />
+
+                            })
+                        }
                     </div>
                 </FormCom>
             </Modal>
