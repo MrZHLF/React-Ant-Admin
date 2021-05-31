@@ -1,6 +1,8 @@
 import React, { Component,Fragment } from 'react'
 import PropTypes from 'prop-types'
-
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { roleMenuAction } from '@/store/action/App'
 
 import { Checkbox } from 'antd';
 
@@ -33,6 +35,14 @@ class checkboxAll extends Component {
         })
     }
 
+    updateStateCheckedList = (data) => {
+        this.setState({
+            ...data
+        },() => {
+            this.updateRoleMenu()
+        })
+    }
+
     // 单个选中
     onChange = (value) => {
         const {checked_length } = this.state;
@@ -57,7 +67,7 @@ class checkboxAll extends Component {
             this.checkedAllStatus(false)
         }
         
-        this.setState({
+        this.updateStateCheckedList({
             checked_list:value
         })
     }
@@ -79,11 +89,53 @@ class checkboxAll extends Component {
     // 全选反选
     onCheckAllChange = (e) => {
         const checked= e.target.checked;
-        this.setState({
+        this.updateStateCheckedList({
             checked_list:checked ? this.state.checked_default : []
         })
+        
         this.checkedAllStatus(checked)
         this.indeterminateStatus(false)
+    }
+
+
+    componentWillUnmount() {
+        this.props.actions.roleMenu({})
+    }
+
+    updateRoleMenu = () => {
+        console.log(555555)
+        const checked = this.state.checked_list;
+        // store
+        let StoreChecked = this.props.menu;
+        const first = this.props.data;
+        // 判断是否存在对象
+        if (!StoreChecked[first.value]) {
+            StoreChecked[first.value] = {}
+        }
+
+        // 存储数据
+        if(checked.length > 0) {
+
+            // 第一种 获取文本
+            // const object = {}
+            // checked.forEach(item => {
+            //     let options = first.child_item.filter(child => child.value === item)
+            //     if(options.length > 0) {
+            //         object[item] = options[0]
+            //     }
+            // })
+            // StoreChecked[first.value] = object
+
+            // 第二种 不需要文本
+            StoreChecked[first.value] = checked
+        }
+
+        // 删除数据
+        if(checked.length === 0) {
+            delete StoreChecked[first.value]
+        }
+        
+        this.props.actions.roleMenu(StoreChecked)
     }
 
     render() {
@@ -114,5 +166,19 @@ checkboxAll.defaultProps = {
     data: {}
 }
 
+const mapStateToProps = (state) => ({
+    menu: state.app.checked_all
+})
 
-export default checkboxAll
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators({
+            roleMenu: roleMenuAction
+        },dispatch)
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(checkboxAll)

@@ -1,16 +1,21 @@
-import {setTokenKey,setUsernameKey, logout,router} from '../Type'
+import {setTokenKey,setUsernameKey, logout,router,checkedAll} from '../Type'
 import { setToken,setUsername,removeToken,removeUsername } from '@/utils/cookies'
 import { Login } from '@api/account'
 import { getUserRole } from '@api/user'
 import Router from './../../router/index'
+
+
 export function setTokenAction(data) {
     setToken(data) //token存储
     return {
         type:setTokenKey,
         value: data,
-        routers:[]
+        routers:[],
+        
     }
 }
+
+
 
 // 设置用户名
 export function setUsernameAction(data) {
@@ -86,4 +91,14 @@ export const getUserRoleAction = () => dispatch => {
     }).catch(error => {
         console.log(error)
     })
+}
+
+
+// 菜单路由
+export function roleMenuAction(data) {
+    return {
+        type:checkedAll,
+        value: data,
+        
+    }
 }

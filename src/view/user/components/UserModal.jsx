@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { UserAdd,UserDetailed,UserEdit } from '@/api/user'
 import { Modal,message,Checkbox } from 'antd';
 import FormCom from '@c/form/Index'
-
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import CheckboxAll from '@c/checkboxAll/Index'
 import { validate_phone,validate_pass } from '@/utils/validate'
@@ -18,6 +19,7 @@ class UserModal extends Component {
             user_id:"",
             role_options:[], //角色权限
             role_value:[],
+            role_menu_value:[], //菜单权限
             role_menu:[
                 {
                     label:"用户管理",
@@ -265,9 +267,23 @@ class UserModal extends Component {
         this.child.onReset()
         this.visibleModal(false)
     }
+
+    // 提交
     submit = (value) => {
+        this.formatMenuRole()
         this.state.user_id ? this.handlerFormEdit(value) : this.handlerFormAdd(value)
         
+    }
+
+    formatMenuRole = () => {
+        const menu = this.props.menu
+        let arr = []
+        for (let key in menu) {
+            arr = arr.concat(menu[key])
+        }
+        this.setState({
+            role_menu_value:arr
+        })
     }
 
     handlerFormAdd = (value) => {
@@ -275,6 +291,10 @@ class UserModal extends Component {
             ...value,
             password:CryptoJS.MD5(value.password).toString()
         }
+         // 权限
+        requestData.role = this.state.role_value.join();
+         // 菜单
+        requestData.role_menu = this.state.role_menu_value.join();
         delete requestData.passwords
         UserAdd(requestData).then(response => {
             const data = response.data
@@ -307,6 +327,8 @@ class UserModal extends Component {
 
         // 权限
         requestData.role = this.state.role_value.join();
+        // 菜单
+        requestData.role_menu = this.state.role_menu_value.join();
 
         if (requestData.password) {
             requestData.password = CryptoJS.MD5(value.password).toString()
@@ -351,4 +373,12 @@ class UserModal extends Component {
         )
     }
 }
-export default UserModal
+
+const mapStateToProps = (state) => ({
+    menu: state.app.checked_all
+})
+
+export default connect(
+    mapStateToProps,
+    null
+)(UserModal)

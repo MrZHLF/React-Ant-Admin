@@ -1,16 +1,18 @@
-import {setTokenKey,setUsernameKey,logout,router} from '../Type'
+import {setTokenKey,setUsernameKey,logout,router,checkedAll} from '../Type'
 import { getToken,getUsername } from '@/utils/cookies'
 
 // 参数
 const app = {
     token:"" || getToken(),
     username:"" || getUsername(),
-    routers:[]
+    routers:[],
+    checked_all: {}
 }
 
 
 // reducer
 const appReducer = function(state = app, action) {
+    console.log(action,'actionaction')
     switch (action.type) {
         // 处理token
         case setTokenKey: {
@@ -40,6 +42,12 @@ const appReducer = function(state = app, action) {
             return {
                 ...state,
                 routers: action.value,
+            }
+        }
+        case checkedAll: {
+            return {
+                ...state,
+                checked_all:action.value,
             }
         }
 
