@@ -20,6 +20,7 @@ class UserModal extends Component {
             role_options:[], //角色权限
             role_value:[],
             role_menu_value:[], //菜单权限
+            role_menu_init:[],///
             role_menu:[
                 {
                     label:"用户管理",
@@ -210,6 +211,18 @@ class UserModal extends Component {
         );
     }
 
+    handleCancel = () => {
+        // 清除
+        this.child.onReset();
+        this.setState({
+            isModalVisible:false,
+            formConfig:{
+                setFieldValue:{} //青春form初始数据
+            },
+            role_value: [],
+            role_menu_init:[]
+        })
+    }
 
     // 弹窗
     visibleModal = (params) => {
@@ -246,7 +259,8 @@ class UserModal extends Component {
                 formConfig:{
                     setFieldValue:data
                 },
-                role_value: data.role ? data.role.split(",") : []
+                role_value: data.role ? data.role.split(",") : [],
+                role_menu_init: data.role_menu ? data.role_menu.split(",") : []
             })
         })
     }
@@ -262,11 +276,7 @@ class UserModal extends Component {
         }
     }
 
-    handleCancel = () => {
-         // 清除
-        this.child.onReset()
-        this.visibleModal(false)
-    }
+   
 
     // 提交
     submit = (value) => {
@@ -363,7 +373,7 @@ class UserModal extends Component {
                     <div ref="role_menu">
                         {
                             this.state.role_menu.map((item,index)=> {
-                                return <CheckboxAll data={item} key={index} />
+                                return <CheckboxAll data={item} key={index} init={this.state.role_menu_init} />
 
                             })
                         }
