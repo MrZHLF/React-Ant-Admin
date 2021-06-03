@@ -280,20 +280,19 @@ class UserModal extends Component {
 
     // 提交
     submit = (value) => {
-        this.formatMenuRole()
+        this.formatMenuRole({key: "menu", state_key: "role_menu_value"});
         this.state.user_id ? this.handlerFormEdit(value) : this.handlerFormAdd(value)
         
     }
 
-    formatMenuRole = () => {
-        const menu = this.props.menu
-        let arr = []
-        for (let key in menu) {
-            arr = arr.concat(menu[key])
+    formatMenuRole = (params) => {
+        const data = this.props[params.key];
+        console.log(data)
+        let arr = [];
+        for(let key in data) {
+            arr = arr.concat(data[key]);
         }
-        this.setState({
-            role_menu_value:arr
-        })
+        this.setState({ [params.state_key]: arr })
     }
 
     handlerFormAdd = (value) => {
@@ -318,7 +317,6 @@ class UserModal extends Component {
     handlerFormEdit = (value) => {
         const password = value.password
         const passwords = value.passwords
-        console.log(value,'value')
         if (password || passwords) {
             if (!validate_pass(password) || !validate_pass(passwords)) {
                 message.error('请输入6-20位的英文加数字')
@@ -373,7 +371,7 @@ class UserModal extends Component {
                     <div ref="role_menu">
                         {
                             this.state.role_menu.map((item,index)=> {
-                                return <CheckboxAll data={item} key={index} init={this.state.role_menu_init} />
+                                return <CheckboxAll type="menu" data={item} key={index} init={this.state.role_menu_init} saveAllKey={true}/>
 
                             })
                         }
@@ -385,7 +383,7 @@ class UserModal extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    menu: state.app.checked_all
+    menu: state.app.checked_all.menu,
 })
 
 export default connect(

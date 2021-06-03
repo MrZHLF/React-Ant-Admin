@@ -43,9 +43,17 @@ export function updateRouter(data) {
     }
 }
 
-export const hasPermission = (role,router) => {
-    if (router.role && router.role.length > 0) {
-        return role.some(elem => router.role.indexOf(elem) >= 0)
+// export const hasPermission = (role,router) => {
+//     if (router.role && router.role.length > 0) {
+//         return role.some(elem => router.role.indexOf(elem) >= 0)
+//     }
+// }
+
+
+export function hasPermission(menu, router){
+    const menus = menu.map(item => `/index${item}`);
+    if(router.key && router.key.length > 0) {
+        return menus.includes(router.key);
     }
 }
 
@@ -64,32 +72,36 @@ export const accountLoginAction = (data) => dispatch => {
 // 获取用户角色
 export const getUserRoleAction = () => dispatch => {
     return getUserRole().then(response => {
-        const data = response.data.data
-        // 角色
-        const role = data.role.split(",")
-        // 存储路由
-        let routersArray = [];
-        if(role.includes("admin")) {
-            routersArray = Router
-        } else {
-            routersArray = Router.filter((item) => {
+        console.log(response,'responseresponseresponseresponse');
+        const data = response.data.data;
+        // 菜单
+        console.log(JSON.stringify(data.menu),'menus');
+        const  menu = data.menu && data.menu.split(",");
+        // // 存储路由
+        let routerArray = [];
+        if(!menu) {
+            routerArray = Router;
+        }else{
+            routerArray = Router.filter((item) => {
                 // 第一层
-                if (hasPermission(role,item)) {
-                    if (item.child && item.child.length > 0) {
-                        item.child.filter(child => {
-                            if(this.hasPermission(role,child)) {
-                                return child
+                if(hasPermission(menu, item)) {
+                    if(item.child && item.child.length > 0) {
+                        item.child = item.child.filter((child) => {
+                            if(hasPermission(menu, child)) {
+                                return child;
                             }
+                            return false;
                         })
-                        return item
+                        return item;
                     }
-                    return item
+                    return item;
                 }
+                return false;
             })
         }
-        dispatch(updateRouter(routersArray))
+        dispatch(updateRouter(routerArray));
     }).catch(error => {
-        console.log(error)
+
     })
 }
 

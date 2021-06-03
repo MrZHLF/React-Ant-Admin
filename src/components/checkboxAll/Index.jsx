@@ -1,192 +1,210 @@
-import React, { Component,Fragment } from 'react'
-import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { roleMenuAction } from '@/store/action/App'
-
-import { Checkbox } from 'antd';
-
+import React, { Component, Fragment } from "react";
+import { withRouter } from 'react-router-dom';
+// propTypes
+import PropTypes from 'prop-types';
+// connect
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+// action
+import { roleMenuAction } from "@/store/action/App";
+// antd
+import { Checkbox } from "antd";
 const CheckboxGroup = Checkbox.Group;
-
-class checkboxAll extends Component {
-    constructor(props) {
-        super(props)
+// class 组件
+class CheckboxAll extends Component {
+    constructor(props){
+        super(props); // 初始化默认值 
         this.state = {
-            checked_default:[],
+            checked_default: [],
             checked_length: 0,
-            checked_list:[],
-            indeterminate:false,
-            checkedAll:false
+            checked_list: [],
+            indeterminate: false,
+            checkAll: false
         }
     }
-
-    UNSAFE_componentWillReceiveProps(nextPtops) {
-        this.checkboxInit(nextPtops.init)
+    componentDidMount(){
+        const checked_list = this.props.data.child_item;
+        
+        let checked_value = null;
+        if(checked_list && checked_list.length > 0) {
+            checked_value = checked_list.map(item => item.value);
+        }
+        this.setState({
+            checked_default: checked_value,
+            checked_length: checked_value.length
+        })
     }
 
-    componentWillUnmount() {
-        this.props.actions.roleMenu({})
+    UNSAFE_componentWillReceiveProps(nextProps){
+        this.checkboxInit(nextProps.init);
     }
 
+    componentWillUnmount(){
+        this.props.actions.roleMenu({});
+    }
+
+    // 初始化
     checkboxInit = (data) => {
         const check_list = data;
-        const checked = check_list.filter(item => {
-            return item.indexOf(this.props.data.value) != -1
-        })
+        // 过滤值
+        let checked = [];
+        if(this.props.saveAllKey) {
+            checked = check_list.filter(item => {
+                return item.indexOf(this.props.data.value) != -1;
+            })
+        }else{
+            checked = check_list;
+        }
+        // 初始值
         this.setState({
             checked_list: checked
-        },() => {
-            this.isCheckAll()
+        }, () => {
+            // 全选状态
+            this.isCheckAll();
+            // 写入 store
+            this.updateRoleMenu();
         })
-        
     }
-
-    // 判断全选
+    // 判断全选状态
     isCheckAll = () => {
-        const {checked_length,checked_list } = this.state;
+        const { checked_length, checked_list } = this.state;  // 默认值 
         // 部分选中
         let indeterminate = false;
         // 全部
         let checkAll = false;
-
-        if(checked_length !== checked_list.length) {
-            // 部分选中
+        // 存在ALL选项时
+        let length = checked_list.length;
+        if(this.props.saveAllKey && checked_list.includes(this.props.data.value)) {
+            length--;
+        }
+        // 部分选中
+        if(checked_length !== length){          
             indeterminate = true;
             checkAll = false;
         }
-
-        if(checked_length === checked_list.length) {
-            // 全部选中
+        // 全部
+        if(checked_length === length) {         // 全部选中：1、打勾；2、部分选中清除
             indeterminate = false;
             checkAll = true;
         }
-
-        if(checked_list.length === 0) {
-            // 都没有选中
+        // 都没有
+        if(length === 0){
             indeterminate = false;
             checkAll = false;
         }
-
-        this.setState({
+        // 更新选中的状态
+        this.setState({ 
             indeterminate,
             checkAll
         })
     }
-
-    componentDidMount() {
-
-        // 存储默认长度
-        const checked_list = this.props.data.child_item;
-        let checked_value = null
-        if (checked_list && checked_list.length > 0) {
-            checked_value = checked_list.map(item=>item.value)
-        }
-
-        this.setState({
-            checked_default:checked_value,
-            checked_length:checked_value.length
-        })
-    }
-
-    // 单个选中
+    // 单个选项
     onChange = (value) => {
-        this.updateStateCheckedList(value)
+        this.updateStateCheckedList(value);
     }
-    
-    // 全选反选
+    // 全选、返选
     onCheckAllChange = (e) => {
-        const checked= e.target.checked;
+        const checked = e.target.checked;
+        // 全选、返选
         this.updateStateCheckedList(checked ? this.state.checked_default : [])
     }
 
-     // 更新值
+    // 更新值
     updateStateCheckedList = (data) => {
         this.setState({
-            checked_list:data
-        },() => {
-            this.isCheckAll()
+            checked_list: data
+        }, () => {
+            // 更新选中状态
+            this.isCheckAll();
+            // 写入 store
+            this.updateRoleMenu();
         })
     }
-
     updateRoleMenu = () => {
-        console.log(555555)
+        const checked_type = this.props.type;
+        // checked_list
         const checked = this.state.checked_list;
+        // 第一层
+        const first = this.props.data;  // child_item
         // store
-        let StoreChecked = this.props.menu;
-        const first = this.props.data;
+        let StoreChecked = this.props.checked;  // checked_all: { menu: {} }
+        if(!StoreChecked[checked_type]) { StoreChecked[checked_type] = {}; }
         // 判断是否存在对象
-        if (!StoreChecked[first.value]) {
-            StoreChecked[first.value] = {}
-        }
-
+        if(!StoreChecked[checked_type][first.value]) { StoreChecked[checked_type][first.value] = {}; }
         // 存储数据
         if(checked.length > 0) {
-
-            // 第一种 获取文本
-            // const object = {}
+            // 第一种：需要取文本
+            // 匹配
+            // const object = {};
             // checked.forEach(item => {
-            //     let options = first.child_item.filter(child => child.value === item)
+            //     let options = first.child_item.filter(child => child.value === item);  // 过滤的结果是数组，无论是否匹配成功都是数组
             //     if(options.length > 0) {
-            //         object[item] = options[0]
+            //         object[item] = options[0];
             //     }
             // })
-            // StoreChecked[first.value] = object
+            
+            // 第二种：不需要文本
+            // 更新
+            let checked_value = JSON.parse(JSON.stringify(checked));
+            if(this.props.saveAllKey && !checked_value.includes(this.props.data.value)) {
+                checked_value.unshift(first.value);
+            }
+            StoreChecked[checked_type][first.value] = checked_value;
 
-            // 第二种 不需要文本
-            StoreChecked[first.value] = checked
         }
-
         // 删除数据
         if(checked.length === 0) {
-            delete StoreChecked[first.value]
+            delete StoreChecked[checked_type][first.value];
         }
-        
-        this.props.actions.roleMenu(StoreChecked)
+        this.props.actions.roleMenu(StoreChecked);
     }
-
-    render() {
-        const { label,value,child_item} = this.props.data 
-        const {checked_list,indeterminate,checkedAll} = this.state
+   
+    render(){
+        const { label, value, child_item } = this.props.data;
+        const { checked_list, indeterminate, checkAll } = this.state;
         return (
             <Fragment>
                 <div className="checkbox-wrap">
-                    <div className="all"  >
-                        <Checkbox indeterminate={indeterminate} checked={checkedAll} onChange={this.onCheckAllChange}>{label} </Checkbox>
+                    <div className="all">
+                        <Checkbox indeterminate={indeterminate} checked={checkAll} onChange={this.onCheckAllChange}>{label}</Checkbox>
                     </div>
                     <div className="item">
-                        <CheckboxGroup options={child_item} value={checked_list} onChange={this.onChange}/>
+                        <CheckboxGroup options={child_item} value={checked_list} onChange={this.onChange} /><br/><br/>
                     </div>
                 </div>
-                
             </Fragment>
         )
     }
 }
 
-// 类型检测
-checkboxAll.propTypes = {
+// 校验数据类型
+CheckboxAll.propTypes = {
     data: PropTypes.object,
-    init:PropTypes.array
+    type: PropTypes.string,
+    init: PropTypes.array,
+    saveAllKey: PropTypes.bool
 }
-// 默认值
-checkboxAll.defaultProps = {
+// 默认
+CheckboxAll.defaultProps = {
     data: {},
-    init:[]
+    type: "",
+    init: [],
+    saveAllKey: false
 }
 
 const mapStateToProps = (state) => ({
-    menu: state.app.checked_all
+    checked: state.app.checked_all,
 })
 
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators({
             roleMenu: roleMenuAction
-        },dispatch)
+        }, dispatch)
     }
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(checkboxAll)
+)(withRouter(CheckboxAll));
