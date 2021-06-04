@@ -80,7 +80,7 @@ const Router = [{
         title: '请假',
         icon: 'info-circle-o',
         role: ["user"],
-        key: '/home/about'
+        key: '/index/home/about'
     },
     {
         title: '加班',

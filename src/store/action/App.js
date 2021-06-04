@@ -1,4 +1,4 @@
-import {setTokenKey,setUsernameKey, logout,router,checkedAll} from '../Type'
+import {setTokenKey,setUsernameKey, logout,router,checkedAll,role_button} from '../Type'
 import { setToken,setUsername,removeToken,removeUsername } from '@/utils/cookies'
 import { Login } from '@api/account'
 import { getUserRole } from '@api/user'
@@ -43,6 +43,15 @@ export function updateRouter(data) {
     }
 }
 
+
+// 存储按钮权限
+export function updateButton(data) {
+    return {
+        type:role_button,
+        value:data
+    }
+}
+
 // export const hasPermission = (role,router) => {
 //     if (router.role && router.role.length > 0) {
 //         return role.some(elem => router.role.indexOf(elem) >= 0)
@@ -77,6 +86,7 @@ export const getUserRoleAction = () => dispatch => {
         // 菜单
         console.log(JSON.stringify(data.menu),'menus');
         const  menu = data.menu && data.menu.split(",");
+        const  button = data.button ? data.button.split(",") : [];
         // // 存储路由
         let routerArray = [];
         if(!menu) {
@@ -100,6 +110,7 @@ export const getUserRoleAction = () => dispatch => {
             })
         }
         dispatch(updateRouter(routerArray));
+        dispatch(updateButton(button));
     }).catch(error => {
 
     })

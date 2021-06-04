@@ -1,4 +1,4 @@
-import {setTokenKey,setUsernameKey,logout,router,checkedAll} from '../Type'
+import {setTokenKey,setUsernameKey,logout,router,checkedAll,role_button} from '../Type'
 import { getToken,getUsername } from '@/utils/cookies'
 
 // 参数
@@ -6,7 +6,8 @@ const app = {
     token:"" || getToken(),
     username:"" || getUsername(),
     routers:[],
-    checked_all: {}
+    checked_all: {},
+    button:""
 }
 
 
@@ -44,6 +45,14 @@ const appReducer = function(state = app, action) {
                 routers: action.value,
             }
         }
+
+        case role_button: {
+            return {
+                ...state,
+                button: action.value,
+            }
+        }
+
         case checkedAll: {
             return {
                 ...state,

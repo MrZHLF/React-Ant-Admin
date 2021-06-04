@@ -4,6 +4,7 @@ import  { Button,Switch, message } from 'antd'
 import { Status } from '@api/department'
 
 import TableComponent from '@c/tableData/Index'
+import AuthButton from '@c/authButton/Index'
 
 class DepartmentList extends Component {
     constructor(props) {
@@ -41,10 +42,15 @@ class DepartmentList extends Component {
                         render:(text,rowData)=> {
                             return (
                                 <div className="inline-button">
-                                    <Button type="primary">
-                                        <Link to={{pathname:'/index/department/add',state:{id:rowData.id}}}>编辑</Link>
-                                    </Button>
-                                    <Button onClick={()=>this.delete(rowData.id)}>删除</Button>
+                                    <AuthButton button="department:edit">
+                                        <Button type="primary">
+                                            <Link to={{pathname:'/index/department/add',state:{id:rowData.id}}}>编辑</Link>
+                                        </Button>
+                                    </AuthButton>
+                                    <AuthButton button="department:delete">
+                                        <Button onClick={()=>this.delete(rowData.id)}>删除</Button>
+                                    </AuthButton>
+
                                 </div>
                             )
                         }

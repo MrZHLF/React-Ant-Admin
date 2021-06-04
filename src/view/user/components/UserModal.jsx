@@ -21,6 +21,9 @@ class UserModal extends Component {
             role_value:[],
             role_menu_value:[], //菜单权限
             role_menu_init:[],///
+
+            role_button_value:[],
+            role_button_init:[],
             role_menu:[
                 {
                     label:"用户管理",
@@ -48,6 +51,31 @@ class UserModal extends Component {
                             label:"部门添加",
                             value:"/department/add", 
                         }
+                    ]
+                }
+            ],
+            // 按钮
+            role_button: [
+                {
+                    // 一级
+                    label: "用户列表",
+                    value: "userList",
+                    // 子级
+                    child_item: [
+                        { label: "新增", value: "user:add" },
+                        { label: "编辑", value: "user:edit" },
+                        { label: "删除", value: "user:delete" },
+                    ]
+                },
+                {
+                    // 一级
+                    label: "部门列表",
+                    value: "departmentList",
+                    // 子级
+                    child_item: [
+                        { label: "批量删除", value: "department:patchDelete" },
+                        { label: "编辑", value: "department:edit" },
+                        { label: "删除", value: "department:delete" },
                     ]
                 }
             ],
@@ -176,8 +204,14 @@ class UserModal extends Component {
                 {
                     type:"Slot",
                     label:"菜单权限",
-                    name:"role",
+                    name:"role_menu",
                     slotName:"role_menu"
+                },
+                {
+                    type:"Slot",
+                    label:"按钮权限",
+                    name:"role_button",
+                    slotName:"role_button"
                 }
             ]
         }
@@ -220,7 +254,8 @@ class UserModal extends Component {
                 setFieldValue:{} //青春form初始数据
             },
             role_value: [],
-            role_menu_init:[]
+            role_menu_init:[],
+            role_button_init:[]
         })
     }
 
@@ -260,7 +295,8 @@ class UserModal extends Component {
                     setFieldValue:data
                 },
                 role_value: data.role ? data.role.split(",") : [],
-                role_menu_init: data.role_menu ? data.role_menu.split(",") : []
+                role_menu_init: data.role_menu ? data.role_menu.split(",") : [],
+                role_button_init:data.role_button ? data.role_button.split(",") : [],
             })
         })
     }
@@ -281,6 +317,7 @@ class UserModal extends Component {
     // 提交
     submit = (value) => {
         this.formatMenuRole({key: "menu", state_key: "role_menu_value"});
+        this.formatMenuRole({key: "button", state_key: "role_button_value"});
         this.state.user_id ? this.handlerFormEdit(value) : this.handlerFormAdd(value)
         
     }
@@ -304,6 +341,9 @@ class UserModal extends Component {
         requestData.role = this.state.role_value.join();
          // 菜单
         requestData.role_menu = this.state.role_menu_value.join();
+
+        // 按钮
+        requestData.role_button = this.state.role_button_value.join();
         delete requestData.passwords
         UserAdd(requestData).then(response => {
             const data = response.data
@@ -338,6 +378,8 @@ class UserModal extends Component {
         // 菜单
         requestData.role_menu = this.state.role_menu_value.join();
 
+        // 按钮
+        requestData.role_button = this.state.role_button_value.join();
         if (requestData.password) {
             requestData.password = CryptoJS.MD5(value.password).toString()
             delete requestData.passwords
@@ -376,6 +418,14 @@ class UserModal extends Component {
                             })
                         }
                     </div>
+                    <div ref="role_button">
+                        {
+                            this.state.role_button.map((item,index)=> {
+                                return <CheckboxAll type="button" data={item} key={index} init={this.state.role_button_init} />
+
+                            })
+                        }
+                    </div>
                 </FormCom>
             </Modal>
         )
@@ -384,6 +434,7 @@ class UserModal extends Component {
 
 const mapStateToProps = (state) => ({
     menu: state.app.checked_all.menu,
+    button: state.app.checked_all.button
 })
 
 export default connect(

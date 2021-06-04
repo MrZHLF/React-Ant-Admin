@@ -7,4 +7,6 @@ export const setUsernameKey =  "SET_USERNAME";
 export const logout = "LOGOUT_REMOVE"
 
 export const router = "LOGOUT_ROUTER"
-export const checkedAll = "CHECKED_ALL"
+export const checkedAll = "CHECKED_ALL"  
+
+export const role_button = "ROLE_BUTTON" 
